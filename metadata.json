@@ -1,0 +1,7 @@
+{
+  "name": "MIZGIN OIL - Duhok's Premier Gas Station",
+  "description": "An elite fuel and service destination in Duhok, Iraq, offering premium gasoline, kerosene, LPG, and automotive services.",
+  "requestFramePermissions": [
+    "geolocation"
+  ]
+}
