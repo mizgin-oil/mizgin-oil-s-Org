@@ -1,13 +1,8 @@
-
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Menu, X, MapPin, Phone, Instagram, Facebook, ArrowUpRight, Lock } from 'lucide-react';
+import { Menu, X, MapPin, Phone, Instagram, Facebook, ArrowUpRight, Lock, Fuel } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { OWNER_INFO } from '../constants';
-
-// Use a more reliable source or local path if possible. 
-// For now, keeping the current but adding a better fallback.
-const BRAND_LOGO_URL = "https://drive.google.com/uc?id=1ykt6ACQvAgHfSI7iNYBDrAI3epffWZ-T";
 
 export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -41,22 +36,10 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) =>
             }`}
           >
             <Link to="/" className="flex items-center space-x-3 group py-3">
-              <div className="relative h-12 w-12 flex items-center justify-center transition-transform duration-500 group-hover:scale-110 group-hover:rotate-3">
-                <img 
-                  src={BRAND_LOGO_URL} 
-                  alt="MIZGIN OIL Logo" 
-                  className="h-full w-full object-contain filter drop-shadow-[0_4px_8px_rgba(131,174,55,0.3)]"
-                  onError={(e) => {
-                    // Fallback to a styled div if image fails
-                    (e.target as HTMLImageElement).classList.add('hidden');
-                    const parent = (e.target as HTMLImageElement).parentElement;
-                    if (parent && !parent.querySelector('.logo-fallback')) {
-                      const fallback = document.createElement('div');
-                      fallback.className = 'logo-fallback w-8 h-8 bg-brand-main rounded-full blur-[2px] opacity-80';
-                      parent.appendChild(fallback);
-                    }
-                  }}
-                />
+              <div className="relative h-10 w-10 flex items-center justify-center transition-transform duration-500 group-hover:scale-110">
+                <Fuel className={`h-8 w-8 transition-colors duration-500 ${
+                  scrolled || location.pathname !== '/' ? 'text-brand-main' : 'text-brand-main'
+                }`} />
               </div>
               <div className="flex flex-col -space-y-1">
                 <span className={`text-xl font-extrabold tracking-tighter transition-colors duration-500 ${
@@ -153,21 +136,8 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) =>
           <div className="grid grid-cols-1 md:grid-cols-4 gap-12">
             <div className="md:col-span-2">
               <Link to="/" className="flex items-center space-x-4 mb-8 group">
-                <div className="h-20 w-20 bg-white p-3 rounded-[2rem] shadow-[0_20px_40px_-10px_rgba(255,255,255,0.1)] flex items-center justify-center transition-transform duration-500 group-hover:scale-110 overflow-hidden">
-                  <img 
-                    src={BRAND_LOGO_URL} 
-                    alt="MIZGIN OIL Logo" 
-                    className="h-full w-full object-contain"
-                    onError={(e) => {
-                      (e.target as HTMLImageElement).classList.add('hidden');
-                      const parent = (e.target as HTMLImageElement).parentElement;
-                      if (parent && !parent.querySelector('.logo-fallback')) {
-                         const fallback = document.createElement('div');
-                         fallback.className = 'logo-fallback w-12 h-12 bg-brand-main rounded-full blur-[4px] opacity-80';
-                         parent.appendChild(fallback);
-                      }
-                    }}
-                  />
+                <div className="h-16 w-16 bg-white/10 p-3 rounded-2xl flex items-center justify-center transition-transform duration-500 group-hover:scale-110">
+                  <Fuel className="h-10 w-10 text-brand-main" />
                 </div>
                 <div>
                   <span className="text-3xl font-black tracking-tighter uppercase block">

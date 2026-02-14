@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { motion, useScroll, useTransform } from 'framer-motion';
 import { Link } from 'react-router-dom';
@@ -30,10 +29,21 @@ const HomePage: React.FC = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.2 }}
           >
-            <span className="inline-block px-4 py-1.5 rounded-full bg-brand-main/20 text-brand-main text-xs font-bold uppercase tracking-[0.3em] mb-6 border border-brand-main/30 backdrop-blur-sm">
-              Established Reliability
-            </span>
-            <h1 className="text-6xl md:text-8xl font-black tracking-tighter mb-8 leading-[0.9] text-gradient-light uppercase text-white">
+            <motion.div 
+              animate={{ y: [0, -15, 0] }}
+              transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
+              className="mb-8 p-6 bg-brand-main/10 rounded-3xl border border-brand-main/20 backdrop-blur-sm inline-block"
+            >
+              <Fuel className="h-16 w-16 text-brand-main drop-shadow-[0_0_20px_rgba(131,174,55,0.6)]" />
+            </motion.div>
+
+            <div className="block">
+              <span className="inline-block px-4 py-1.5 rounded-full bg-brand-main/20 text-brand-main text-xs font-bold uppercase tracking-[0.3em] mb-6 border border-brand-main/30 backdrop-blur-sm">
+                Established Reliability
+              </span>
+            </div>
+            
+            <h1 className="text-6xl md:text-8xl font-black tracking-tighter mb-8 leading-[0.9] uppercase text-white">
               Mizgin <br />
               <span className="text-brand-main italic drop-shadow-[0_0_30px_rgba(131,174,55,0.3)]">Oil.</span>
             </h1>

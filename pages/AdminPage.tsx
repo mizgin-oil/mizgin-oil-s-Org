@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { useAdmin } from '../contexts/AdminContext';
@@ -37,8 +36,8 @@ const AdminPage: React.FC = () => {
           className="w-full max-w-md bg-white rounded-[2.5rem] p-10 shadow-3xl"
         >
           <div className="flex flex-col items-center mb-8">
-            <div className="w-16 h-16 bg-brand-main/10 rounded-2xl flex items-center justify-center mb-4">
-              <Lock className="h-8 w-8 text-brand-main" />
+            <div className="w-20 h-20 mb-6 bg-brand-main/10 rounded-2xl flex items-center justify-center">
+              <Lock className="w-10 h-10 text-brand-main" />
             </div>
             <h1 className="text-2xl font-black text-brand-dark uppercase tracking-widest">Admin Access</h1>
             <p className="text-brand-gray text-xs font-bold uppercase tracking-widest mt-2 opacity-60">Mizgin Oil Dashboard</p>
@@ -88,9 +87,14 @@ const AdminPage: React.FC = () => {
     <div className="bg-brand-light min-h-screen pt-32 pb-20">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex flex-col md:flex-row justify-between items-center mb-12 gap-6">
-          <div>
-            <h1 className="text-4xl font-black text-brand-dark uppercase tracking-tighter">Control <span className="text-brand-main">Panel</span></h1>
-            <p className="text-brand-gray text-sm font-bold uppercase tracking-widest opacity-60">System Configuration & Pricing</p>
+          <div className="flex items-center space-x-6">
+            <div className="h-16 w-16 bg-white rounded-2xl flex items-center justify-center shadow-sm border border-brand-light">
+              <Fuel className="h-8 w-8 text-brand-main" />
+            </div>
+            <div>
+              <h1 className="text-4xl font-black text-brand-dark uppercase tracking-tighter">Control <span className="text-brand-main">Panel</span></h1>
+              <p className="text-brand-gray text-sm font-bold uppercase tracking-widest opacity-60">System Configuration & Pricing</p>
+            </div>
           </div>
           <button 
             onClick={() => setIsAuthenticated(false)}
