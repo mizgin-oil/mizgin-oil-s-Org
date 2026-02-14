@@ -1,10 +1,13 @@
 
 import React from 'react';
 import { motion } from 'framer-motion';
+import { useAdmin } from '../contexts/AdminContext';
 import { OWNER_INFO } from '../constants';
-import { Phone, User, Info, MessageCircle, Clock, Award, MapPin, CheckCircle2 } from 'lucide-react';
+import { MessageCircle, Clock, Award, MapPin, CheckCircle2 } from 'lucide-react';
 
 const AboutPage: React.FC = () => {
+  const { contactPhone } = useAdmin();
+
   return (
     <div className="bg-brand-light">
       {/* Header */}
@@ -97,7 +100,7 @@ const AboutPage: React.FC = () => {
               { 
                 icon: <MessageCircle className="h-8 w-8 text-brand-main" />, 
                 title: "Concierge Contact", 
-                content: OWNER_INFO.phone, 
+                content: contactPhone, 
                 sub: "Tel / WhatsApp 24/7" 
               },
               { 

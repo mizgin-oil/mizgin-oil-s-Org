@@ -1,17 +1,18 @@
 
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { FUEL_PRICES } from '../constants';
+import { useAdmin } from '../contexts/AdminContext';
 import { FuelType } from '../types';
-import { Calculator as CalcIcon, RefreshCw, Fuel } from 'lucide-react';
+import { Calculator as CalcIcon, RefreshCw } from 'lucide-react';
 
 export const FuelCalculator: React.FC = () => {
+  const { fuelPrices } = useAdmin();
   const [selectedFuel, setSelectedFuel] = useState<FuelType>(FuelType.NORMAL);
   const [amountIqd, setAmountIqd] = useState<string>('');
   const [liters, setLiters] = useState<string>('');
   const [activeInput, setActiveInput] = useState<'iqd' | 'liters'>('iqd');
 
-  const currentPrice = FUEL_PRICES.find(f => f.type === selectedFuel)?.pricePerLiter || 0;
+  const currentPrice = fuelPrices.find(f => f.type === selectedFuel)?.pricePerLiter || 0;
 
   useEffect(() => {
     if (activeInput === 'iqd' && amountIqd) {
@@ -65,7 +66,7 @@ export const FuelCalculator: React.FC = () => {
         <div>
           <label className="block text-[10px] font-black text-brand-main mb-6 uppercase tracking-[0.3em]">Select Grade</label>
           <div className="grid grid-cols-3 gap-3">
-            {FUEL_PRICES.map((f) => (
+            {fuelPrices.map((f) => (
               <button
                 key={f.type}
                 onClick={() => setSelectedFuel(f.type)}

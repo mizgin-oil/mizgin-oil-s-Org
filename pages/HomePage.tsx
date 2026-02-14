@@ -2,12 +2,12 @@
 import React from 'react';
 import { motion, useScroll, useTransform } from 'framer-motion';
 import { Link } from 'react-router-dom';
-import { FUEL_PRICES } from '../constants';
+import { useAdmin } from '../contexts/AdminContext';
 import { FuelCalculator } from '../components/FuelCalculator';
-// Added missing ArrowUpRight import
-import { Zap, ShieldCheck, Star, MapPin, ExternalLink, Fuel, ArrowRight, MousePointer2, ArrowUpRight } from 'lucide-react';
+import { Zap, ShieldCheck, Star, Fuel, ArrowRight, ArrowUpRight } from 'lucide-react';
 
 const HomePage: React.FC = () => {
+  const { fuelPrices } = useAdmin();
   const { scrollY } = useScroll();
   const y1 = useTransform(scrollY, [0, 500], [0, 200]);
 
@@ -33,7 +33,7 @@ const HomePage: React.FC = () => {
             <span className="inline-block px-4 py-1.5 rounded-full bg-brand-main/20 text-brand-main text-xs font-bold uppercase tracking-[0.3em] mb-6 border border-brand-main/30 backdrop-blur-sm">
               Established Reliability
             </span>
-            <h1 className="text-6xl md:text-8xl font-black tracking-tighter mb-8 leading-[0.9] text-gradient-light uppercase">
+            <h1 className="text-6xl md:text-8xl font-black tracking-tighter mb-8 leading-[0.9] text-gradient-light uppercase text-white">
               Mizgin <br />
               <span className="text-brand-main italic drop-shadow-[0_0_30px_rgba(131,174,55,0.3)]">Oil.</span>
             </h1>
@@ -99,7 +99,7 @@ const HomePage: React.FC = () => {
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
-            {FUEL_PRICES.map((fuel, i) => {
+            {fuelPrices.map((fuel, i) => {
               const Icon = fuel.type === 'Super' ? Star : (fuel.type === 'Enhanced' ? ShieldCheck : Zap);
               return (
                 <motion.div 

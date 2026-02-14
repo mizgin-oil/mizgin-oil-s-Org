@@ -11,10 +11,17 @@ export interface FuelPrice {
   description: string;
 }
 
+export interface CoffeeItem {
+  id: string;
+  name: string;
+  price: number;
+}
+
 export interface Service {
   id: string;
   name: string;
   description: string;
   icon: string;
   image: string;
+  price?: number; // Added for editable service prices like Car Wash
 }

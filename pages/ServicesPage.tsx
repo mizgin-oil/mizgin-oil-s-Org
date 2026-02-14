@@ -1,9 +1,8 @@
 
 import React from 'react';
 import { motion } from 'framer-motion';
-// Added missing Link import
 import { Link } from 'react-router-dom';
-import { SERVICES } from '../constants';
+import { useAdmin } from '../contexts/AdminContext';
 import { Coffee, Droplets, ShoppingBag, Settings as Tool, ArrowRight } from 'lucide-react';
 
 const iconMap: Record<string, React.ReactNode> = {
@@ -14,6 +13,8 @@ const iconMap: Record<string, React.ReactNode> = {
 };
 
 const ServicesPage: React.FC = () => {
+  const { services, coffeeMenu } = useAdmin();
+
   return (
     <div className="bg-brand-light min-h-screen">
       {/* Page Header */}
@@ -30,7 +31,7 @@ const ServicesPage: React.FC = () => {
             className="max-w-3xl"
           >
             <span className="text-brand-main font-black uppercase tracking-[0.5em] text-xs mb-8 block">Concierge & Care</span>
-            <h1 className="text-6xl md:text-8xl font-black mb-8 uppercase tracking-tighter leading-[0.85]">
+            <h1 className="text-6xl md:text-8xl font-black mb-8 uppercase tracking-tighter leading-[0.85] text-white">
               Elite <br /><span className="text-brand-main italic">Amenities.</span>
             </h1>
             <p className="text-xl text-brand-gray font-light max-w-2xl leading-relaxed">
@@ -44,7 +45,7 @@ const ServicesPage: React.FC = () => {
       <section className="py-32">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 gap-24">
-            {SERVICES.map((service, index) => (
+            {services.map((service, index) => (
               <motion.div 
                 key={service.id}
                 initial={{ opacity: 0, y: 50 }}
@@ -72,10 +73,30 @@ const ServicesPage: React.FC = () => {
                   <div className="inline-flex items-center justify-center w-20 h-20 bg-brand-main/10 rounded-3xl text-brand-main border border-brand-main/20">
                     {iconMap[service.icon]}
                   </div>
-                  <h3 className="text-5xl font-black text-brand-dark uppercase tracking-tighter">{service.name}</h3>
+                  <div className="flex items-baseline space-x-6">
+                    <h3 className="text-5xl font-black text-brand-dark uppercase tracking-tighter">{service.name}</h3>
+                    {service.id === 'car-wash' && (
+                      <span className="text-2xl font-black text-brand-main uppercase tracking-widest">{service.price} <span className="text-[10px] text-brand-gray/40">IQD</span></span>
+                    )}
+                  </div>
                   <p className="text-xl text-brand-gray leading-relaxed font-light">
                     {service.description}
                   </p>
+                  
+                  {service.id === 'coffee-shop' && (
+                    <div className="bg-white p-8 rounded-[2rem] shadow-xl border border-brand-light">
+                      <h4 className="text-xs font-black uppercase tracking-[0.3em] text-brand-main mb-6">Signature Brews</h4>
+                      <div className="space-y-4">
+                        {coffeeMenu.map(coffee => (
+                          <div key={coffee.id} className="flex justify-between items-center border-b border-brand-light pb-2">
+                            <span className="font-bold text-brand-dark">{coffee.name}</span>
+                            <span className="font-black text-brand-main text-sm">{coffee.price} IQD</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
                   <ul className="space-y-4">
                     {['Premium Quality Guaranteed', 'Professional Service Team', 'Available 24/7'].map((feat, i) => (
                       <li key={i} className="flex items-center space-x-3 text-brand-dark font-bold text-sm uppercase tracking-widest">
@@ -84,10 +105,6 @@ const ServicesPage: React.FC = () => {
                       </li>
                     ))}
                   </ul>
-                  <button className="group flex items-center space-x-4 px-8 py-4 bg-brand-dark text-white rounded-2xl hover:bg-brand-main transition-all duration-300 uppercase tracking-widest text-xs font-black shadow-xl">
-                    <span>Explore Details</span>
-                    <ArrowRight className="h-4 w-4 group-hover:translate-x-2 transition-transform" />
-                  </button>
                 </div>
               </motion.div>
             ))}

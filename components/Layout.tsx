@@ -1,11 +1,12 @@
 
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Menu, X, MapPin, Phone, Instagram, Facebook, ArrowUpRight } from 'lucide-react';
+import { Menu, X, MapPin, Phone, Instagram, Facebook, ArrowUpRight, Lock } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { OWNER_INFO } from '../constants';
 
-// Google Drive direct link for the logo provided by the user
+// Use a more reliable source or local path if possible. 
+// For now, keeping the current but adding a better fallback.
 const BRAND_LOGO_URL = "https://drive.google.com/uc?id=1ykt6ACQvAgHfSI7iNYBDrAI3epffWZ-T";
 
 export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -29,7 +30,7 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) =>
     <div className="min-h-screen flex flex-col font-sans selection:bg-brand-main selection:text-white">
       {/* Header */}
       <header 
-        className={`fixed w-full z-50 transition-all duration-500 ${
+        className={`fixed w-full z-40 transition-all duration-500 ${
           scrolled ? 'py-4' : 'py-6'
         }`}
       >
@@ -46,7 +47,14 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) =>
                   alt="MIZGIN OIL Logo" 
                   className="h-full w-full object-contain filter drop-shadow-[0_4px_8px_rgba(131,174,55,0.3)]"
                   onError={(e) => {
-                    (e.target as HTMLImageElement).style.opacity = '0';
+                    // Fallback to a styled div if image fails
+                    (e.target as HTMLImageElement).classList.add('hidden');
+                    const parent = (e.target as HTMLImageElement).parentElement;
+                    if (parent && !parent.querySelector('.logo-fallback')) {
+                      const fallback = document.createElement('div');
+                      fallback.className = 'logo-fallback w-8 h-8 bg-brand-main rounded-full blur-[2px] opacity-80';
+                      parent.appendChild(fallback);
+                    }
                   }}
                 />
               </div>
@@ -145,11 +153,20 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) =>
           <div className="grid grid-cols-1 md:grid-cols-4 gap-12">
             <div className="md:col-span-2">
               <Link to="/" className="flex items-center space-x-4 mb-8 group">
-                <div className="h-20 w-20 bg-white p-3 rounded-[2rem] shadow-[0_20px_40px_-10px_rgba(255,255,255,0.1)] flex items-center justify-center transition-transform duration-500 group-hover:scale-110">
+                <div className="h-20 w-20 bg-white p-3 rounded-[2rem] shadow-[0_20px_40px_-10px_rgba(255,255,255,0.1)] flex items-center justify-center transition-transform duration-500 group-hover:scale-110 overflow-hidden">
                   <img 
                     src={BRAND_LOGO_URL} 
                     alt="MIZGIN OIL Logo" 
                     className="h-full w-full object-contain"
+                    onError={(e) => {
+                      (e.target as HTMLImageElement).classList.add('hidden');
+                      const parent = (e.target as HTMLImageElement).parentElement;
+                      if (parent && !parent.querySelector('.logo-fallback')) {
+                         const fallback = document.createElement('div');
+                         fallback.className = 'logo-fallback w-12 h-12 bg-brand-main rounded-full blur-[4px] opacity-80';
+                         parent.appendChild(fallback);
+                      }
+                    }}
                   />
                 </div>
                 <div>
@@ -196,11 +213,19 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) =>
             </div>
           </div>
           
-          <div className="mt-20 pt-8 border-t border-white/5 flex flex-col md:flex-row justify-between items-center text-xs text-brand-gray font-medium uppercase tracking-widest">
+          <div className="mt-20 pt-8 border-t border-white/5 flex flex-col md:flex-row justify-between items-center text-[10px] text-brand-gray font-bold uppercase tracking-[0.3em]">
             <span>&copy; {new Date().getFullYear()} MIZGIN OIL. All Rights Reserved.</span>
-            <span className="mt-4 md:mt-0 opacity-50 flex items-center">
-              Crafted for Duhok Excellence
-            </span>
+            
+            <div className="mt-4 md:mt-0 flex items-center space-x-8">
+              <span className="opacity-30">Crafted for Duhok Excellence</span>
+              <Link 
+                to="/admin" 
+                className="flex items-center space-x-2 text-brand-main/60 hover:text-brand-main transition-all group"
+              >
+                <Lock className="h-3 w-3 transition-transform group-hover:scale-110" />
+                <span>Admin</span>
+              </Link>
+            </div>
           </div>
         </div>
       </footer>
