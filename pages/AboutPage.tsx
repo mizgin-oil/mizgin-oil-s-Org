@@ -2,8 +2,8 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { useAdmin } from '../contexts/AdminContext';
-import { OWNER_INFO } from '../constants';
-import { MessageCircle, Clock, Award, MapPin, CheckCircle2 } from 'lucide-react';
+import { OWNER_INFO, LEGACY_BRAND_IMAGE } from '../constants';
+import { MessageCircle, Clock, Award, MapPin, CheckCircle2, History } from 'lucide-react';
 
 const AboutPage: React.FC = () => {
   const { contactPhone } = useAdmin();
@@ -15,7 +15,7 @@ const AboutPage: React.FC = () => {
         <div className="absolute inset-0 z-0">
           <img 
             src="https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&q=80&w=2000" 
-            alt="MIZGIN OIL Legacy" 
+            alt="MIZGIN OIL Legacy Background" 
             className="w-full h-full object-cover opacity-20"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-brand-gray via-brand-gray/80 to-transparent" />
@@ -27,9 +27,9 @@ const AboutPage: React.FC = () => {
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 1 }}
           >
-            <span className="text-brand-main font-black uppercase tracking-[0.5em] text-xs mb-8 block">Our Legacy</span>
+            <span className="text-brand-main font-black uppercase tracking-[0.5em] text-xs mb-8 block">Duhok Excellence</span>
             <h1 className="text-6xl md:text-9xl font-black text-white mb-8 tracking-tighter uppercase leading-[0.8]">
-              The <span className="text-brand-main italic">Source.</span>
+              The <span className="text-brand-main italic">Legacy.</span>
             </h1>
             <div className="text-3xl md:text-5xl font-arabic text-brand-main mb-12 opacity-80" dir="rtl">
               {OWNER_INFO.localName}
@@ -38,26 +38,31 @@ const AboutPage: React.FC = () => {
         </div>
       </section>
 
-      {/* Narrative Section */}
-      <section className="py-32">
+      {/* Heritage & Brand Image Section */}
+      <section className="py-32 relative">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-24 items-center">
             <motion.div
               initial={{ opacity: 0, x: -50 }}
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
-              className="relative"
+              className="relative order-2 lg:order-1"
             >
               <div className="absolute -inset-10 bg-brand-main/5 blur-[100px] rounded-full pointer-events-none" />
               <div className="relative z-10 space-y-10">
-                <span className="text-brand-main font-black uppercase tracking-[0.4em] text-xs block">Leadership</span>
+                <div className="flex items-center space-x-4">
+                  <div className="w-12 h-12 bg-brand-main/10 rounded-xl flex items-center justify-center">
+                    <History className="h-6 w-6 text-brand-main" />
+                  </div>
+                  <span className="text-brand-main font-black uppercase tracking-[0.4em] text-xs block">Established 2005</span>
+                </div>
                 <h2 className="text-6xl font-black text-brand-dark uppercase tracking-tighter leading-none">
-                  Founded On <br /> <span className="text-brand-main">Trust.</span>
+                  A Symbol Of <br /> <span className="text-brand-main">Reliability.</span>
                 </h2>
                 <p className="text-2xl text-brand-gray font-light leading-relaxed">
-                  "At MIZGIN OIL, we believe the road connects us all. Our mission is to ensure every journey is fueled by quality that never wavers."
+                  "Since our first station opened on Zakho Way, MIZGIN OIL has stood as a beacon of quality in Duhok. Our identity is rooted in the purity of the energy we provide and the trust of the drivers we serve."
                 </p>
-                <div className="flex items-center space-x-4">
+                <div className="flex items-center space-x-4 pt-6">
                   <div className="w-16 h-px bg-brand-main" />
                   <span className="text-xl font-black text-brand-dark uppercase tracking-widest">{OWNER_INFO.name}</span>
                 </div>
@@ -68,45 +73,46 @@ const AboutPage: React.FC = () => {
               initial={{ opacity: 0, scale: 0.9 }}
               whileInView={{ opacity: 1, scale: 1 }}
               viewport={{ once: true }}
-              className="relative"
+              className="relative group order-1 lg:order-2"
             >
-              <div className="aspect-[4/5] rounded-[4rem] overflow-hidden shadow-3xl">
+              <div className="absolute -inset-4 bg-brand-main rounded-[4.5rem] blur-2xl opacity-20 group-hover:opacity-40 transition-opacity duration-700" />
+              <div className="aspect-square rounded-[4rem] overflow-hidden shadow-3xl bg-brand-gray border-[12px] border-white p-12 relative flex items-center justify-center">
                 <img 
-                  src="https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&q=80&w=800" 
-                  alt="Mizgin - Founder" 
-                  className="w-full h-full object-cover"
+                  src={LEGACY_BRAND_IMAGE} 
+                  alt="Mizgin Oil Official Brand Mark" 
+                  className="w-full h-full object-contain transition-transform duration-1000 group-hover:scale-110"
                 />
               </div>
-              <div className="absolute -bottom-10 -right-10 w-48 h-48 bg-brand-main p-8 rounded-[3rem] shadow-3xl flex flex-col justify-center items-center text-white text-center">
-                <Award className="h-10 w-10 mb-2" />
-                <span className="text-[10px] uppercase font-black tracking-widest">Official Licensed Service</span>
+              <div className="absolute -bottom-10 -left-10 w-48 h-48 bg-brand-dark p-8 rounded-[3rem] shadow-3xl flex flex-col justify-center items-center text-white text-center border-4 border-white">
+                <Award className="h-10 w-10 mb-2 text-brand-main" />
+                <span className="text-[10px] uppercase font-black tracking-widest text-white/80">Premium Brand Selection</span>
               </div>
             </motion.div>
           </div>
         </div>
       </section>
 
-      {/* Info Cards */}
+      {/* Operational Prowess */}
       <section className="py-32 bg-brand-dark text-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
             {[
               { 
                 icon: <MapPin className="h-8 w-8 text-brand-main" />, 
-                title: "Location Details", 
+                title: "Prime Location", 
                 content: OWNER_INFO.address, 
-                sub: OWNER_INFO.location 
+                sub: "Heart of Zakho Way, Duhok" 
               },
               { 
                 icon: <MessageCircle className="h-8 w-8 text-brand-main" />, 
-                title: "Concierge Contact", 
+                title: "Client Support", 
                 content: contactPhone, 
-                sub: "Tel / WhatsApp 24/7" 
+                sub: "Professional Concierge 24/7" 
               },
               { 
                 icon: <Clock className="h-8 w-8 text-brand-main" />, 
-                title: "Always Open", 
-                content: "24 Hours Operations", 
+                title: "Round-the-clock", 
+                content: "Uninterrupted Service", 
                 sub: "Fueling your journey day and night" 
               }
             ].map((card, i) => (
@@ -116,11 +122,11 @@ const AboutPage: React.FC = () => {
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ delay: i * 0.1 }}
                 viewport={{ once: true }}
-                className="p-12 bg-white/5 rounded-[3rem] border border-white/10 hover:border-brand-main transition-colors duration-500"
+                className="p-12 bg-white/5 rounded-[3rem] border border-white/10 hover:border-brand-main transition-all duration-500 group"
               >
-                <div className="mb-8">{card.icon}</div>
+                <div className="mb-8 group-hover:scale-110 transition-transform">{card.icon}</div>
                 <h4 className="text-xs font-black uppercase tracking-[0.3em] text-brand-main mb-6">{card.title}</h4>
-                <p className="text-2xl font-black mb-2 uppercase tracking-tight">{card.content}</p>
+                <p className="text-2xl font-black mb-2 uppercase tracking-tight leading-tight">{card.content}</p>
                 <p className="text-brand-gray text-sm font-light uppercase tracking-widest">{card.sub}</p>
               </motion.div>
             ))}
@@ -128,8 +134,8 @@ const AboutPage: React.FC = () => {
         </div>
       </section>
 
-      {/* Commitment List */}
-      <section className="py-40">
+      {/* Final Commitment */}
+      <section className="py-40 bg-white">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -137,7 +143,7 @@ const AboutPage: React.FC = () => {
             viewport={{ once: true }}
           >
             <h2 className="text-5xl font-black text-brand-dark mb-12 uppercase tracking-tighter leading-none">
-              A Standard <br /> <span className="text-brand-main italic">Without Compromise.</span>
+              A Standard <br /> <span className="text-brand-main italic">Defined By Honor.</span>
             </h2>
             <p className="text-xl text-brand-gray leading-relaxed font-light mb-16">
               {OWNER_INFO.description}
@@ -146,7 +152,7 @@ const AboutPage: React.FC = () => {
               {[
                 "Certified Purity", "Elite Maintenance", "Community First", "Global Standards"
               ].map((item, i) => (
-                <div key={i} className="flex items-center space-x-3 text-brand-dark font-black uppercase tracking-[0.2em] text-xs">
+                <div key={i} className="flex items-center space-x-3 text-brand-dark font-black uppercase tracking-[0.2em] text-[10px]">
                   <CheckCircle2 className="h-5 w-5 text-brand-main" />
                   <span>{item}</span>
                 </div>

@@ -3,7 +3,6 @@ import { HashRouter as Router, Routes, Route } from 'react-router-dom';
 import { Layout } from './components/Layout';
 import { AdminProvider } from './contexts/AdminContext';
 import { motion } from 'framer-motion';
-import { Fuel } from 'lucide-react';
 
 // Lazy load pages for performance
 const HomePage = lazy(() => import('./pages/HomePage'));
@@ -14,22 +13,8 @@ const AdminPage = lazy(() => import('./pages/AdminPage'));
 const LoadingFallback = () => (
   <div className="h-screen flex items-center justify-center bg-brand-light">
     <div className="flex flex-col items-center">
-      <motion.div
-        animate={{ 
-          scale: [1, 1.1, 1],
-          opacity: [1, 0.7, 1]
-        }}
-        transition={{ 
-          duration: 2, 
-          repeat: Infinity,
-          ease: "easeInOut" 
-        }}
-        className="mb-8"
-      >
-        <Fuel className="h-20 w-20 text-brand-main drop-shadow-[0_0_15px_rgba(131,174,55,0.4)]" />
-      </motion.div>
       <div className="flex flex-col items-center">
-        <div className="w-48 h-1 bg-brand-gray/10 rounded-full overflow-hidden relative mb-4">
+        <div className="w-56 h-1 bg-brand-gray/10 rounded-full overflow-hidden relative mb-8">
           <motion.div 
             initial={{ left: '-100%' }}
             animate={{ left: '100%' }}
@@ -37,8 +22,16 @@ const LoadingFallback = () => (
             className="absolute top-0 bottom-0 w-1/2 bg-brand-main"
           />
         </div>
-        <p className="text-brand-gray font-black uppercase tracking-[0.4em] text-[10px]">
-          Mizgin <span className="text-brand-main">Oil</span>
+        <motion.p 
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 1 }}
+          className="text-brand-dark font-black uppercase tracking-[0.6em] text-[12px] text-center"
+        >
+          MIZGIN <span className="text-brand-main">OIL</span>
+        </motion.p>
+        <p className="mt-3 text-[10px] font-bold text-brand-gray uppercase tracking-[0.3em] opacity-40">
+          Refining Excellence
         </p>
       </div>
     </div>

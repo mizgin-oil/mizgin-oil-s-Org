@@ -1,4 +1,9 @@
+
 import { FuelType, FuelPrice, Service } from './types';
+
+export const BRAND_LOGO_URL = 'https://i.postimg.cc/DJgv1vKF/462631691-122107837820551166-1205886789451223005-n-1-removebg-preview-(1).png';
+
+export const LEGACY_BRAND_IMAGE = 'https://i.postimg.cc/m1ybNbxq/462631691-122107837820551166-1205886789451223005-n-1-removebg-preview.png';
 
 export const FUEL_PRICES: FuelPrice[] = [
   {
