@@ -233,7 +233,6 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) =>
               <ul className="space-y-5 text-brand-gray font-medium">
                 <li><Link to="/services" className="hover:text-white transition-colors">{t('nav.services')}</Link></li>
                 <li><Link to="/about" className="hover:text-white transition-colors">{t('nav.legacy')}</Link></li>
-                <li><a href="#location" className="hover:text-white transition-colors">{t('nav.visitHub')}</a></li>
               </ul>
             </div>
 
