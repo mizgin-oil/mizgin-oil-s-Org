@@ -268,7 +268,6 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) =>
             <span>&copy; {new Date().getFullYear()} MIZGIN OIL. {t('footer.rights')}</span>
             
             <div className={`mt-6 md:mt-0 flex items-center ${isRtl ? 'space-x-reverse space-x-10' : 'space-x-10'}`}>
-              <span className="opacity-40">Duhok Excellence Since 2005</span>
               <Link to="/admin" className={`flex items-center space-x-3 text-brand-main/60 hover:text-brand-main transition-all group ${isRtl ? 'space-x-reverse' : ''}`}>
                 <Lock className="h-3 w-3 transition-transform group-hover:scale-110" />
                 <span>{t('nav.admin')}</span>
