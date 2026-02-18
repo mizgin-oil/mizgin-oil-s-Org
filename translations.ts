@@ -1,4 +1,3 @@
-
 export const translations = {
   en: {
     dir: 'ltr',
@@ -11,7 +10,6 @@ export const translations = {
       experience: 'Experience',
       services: 'Services',
       legacy: 'Legacy',
-      visitHub: 'Visit Hub',
       admin: 'Admin'
     },
     hero: {
@@ -45,8 +43,8 @@ export const translations = {
         lpg: { title: 'Refined LPG', desc: 'Clean, consistent energy flow for sustainable applications.' }
       },
       location: {
-        title: 'Visit Our',
-        italic: 'Hub.',
+        title: 'Our',
+        italic: 'Location.',
         sub: 'Destination',
         desc: 'Strategically located on the legendary Zakho Way, MIZGIN OIL is your 24/7 gateway to reliability.',
         label: 'Location',
@@ -136,7 +134,6 @@ export const translations = {
       experience: 'ئەزموون',
       services: 'خزمەتگوزاری',
       legacy: 'کەلەپوور',
-      visitHub: 'سەردان بکە',
       admin: 'ئەدمین'
     },
     hero: {
@@ -170,8 +167,8 @@ export const translations = {
         lpg: { title: 'گازا LPG', desc: 'بۆڕینا وزەیا پاقژ و بەردەوام بۆ کارپێکرنێن خۆڕاگر.' }
       },
       location: {
-        title: 'سەردانا مە',
-        italic: 'بکە.',
+        title: 'ناونیشانا',
+        italic: 'مە.',
         sub: 'جهێ مە',
         desc: 'ب شێوەیەکێ ستراتیژی ل سەر ڕێکا زاخۆ یا ناودار کەفتیە، مزگین ئۆیل دەرگەهێ تە یێ ٢٤/٧ ە بۆ باوەریێ.',
         label: 'ناونیشان',
@@ -261,7 +258,6 @@ export const translations = {
       experience: 'ئەزموون',
       services: 'خزمەتگوزارییەکان',
       legacy: 'کەلەپوور',
-      visitHub: 'سەردانمان بکە',
       admin: 'ئەدمین'
     },
     hero: {
@@ -295,8 +291,8 @@ export const translations = {
         lpg: { title: 'گازی LPG', desc: 'ڕۆیشتنی وزەی پاک و بەردەوام بۆ کارپێکردنی جۆراوجۆر.' }
       },
       location: {
-        title: 'سەردانی بنکەی',
-        italic: 'مە بکە.',
+        title: 'ناونیشانی',
+        italic: 'مە.',
         sub: 'ناونیشان',
         desc: 'بە شێوەیەکی ستراتیژی لەسەر ڕێگای زاخۆ، مزگین ئۆیل دەروازەی ٢٤/٧ ی تۆیە بۆ متمانە.',
         label: 'شوێن',
@@ -386,7 +382,6 @@ export const translations = {
       experience: 'الخبرة',
       services: 'الخدمات',
       legacy: 'الإرث',
-      visitHub: 'زيارتنا',
       admin: 'المسؤول'
     },
     hero: {
@@ -420,8 +415,8 @@ export const translations = {
         lpg: { title: 'الغاز المسال LPG', desc: 'تدفق طاقة نظيف ومتسق للتطبيقات المستدامة.' }
       },
       location: {
-        title: 'قم بزيارة',
-        italic: 'مركزنا.',
+        title: 'موقعنا',
+        italic: 'الاستراتيجي.',
         sub: 'الوجهة',
         desc: 'تقع محطة مزكين أويل بموقع استراتيجي على طريق زاخو الأسطوري، وهي بوابتك الموثوقة على مدار الساعة طوال أيام الأسبوع.',
         label: 'الموقع',
@@ -511,7 +506,6 @@ export const translations = {
       experience: 'Deneyim',
       services: 'Hizmetler',
       legacy: 'Miras',
-      visitHub: 'Ziyaret Et',
       admin: 'Yönetici'
     },
     hero: {
@@ -542,11 +536,11 @@ export const translations = {
       features: {
         gasoline: { title: 'Elit Benzin', desc: 'Özel motor performansı için özel olarak rafine edilmiş kaliteler.' },
         kerosene: { title: 'Saf Gaz Yağı', desc: 'Kritik endüstriyel ve evsel ısıtma için ultra yüksek saflık.' },
-        lpg: { title: 'Rafine LPG', desc: 'Sürdürülebilir uygulamalar için temiz, tutarlı enerji akışı.' }
+        lpg: { title: 'Refined LPG', desc: 'Sürdürülebilir uygulamalar için temiz, tutarlı enerji akışı.' }
       },
       location: {
-        title: 'Merkezimizi',
-        italic: 'Ziyaret Edin.',
+        title: 'Bizim',
+        italic: 'Konumumuz.',
         sub: 'Varış Noktası',
         desc: 'Efsanevi Zaho Yolu üzerinde stratejik bir konuma sahip olan Mizgin Oil, 7/24 güvenilirliğe açılan kapınızdır.',
         label: 'Konum',
