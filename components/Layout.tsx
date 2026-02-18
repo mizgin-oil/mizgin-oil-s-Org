@@ -136,13 +136,6 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) =>
                   )}
                 </AnimatePresence>
               </div>
-
-              <a 
-                href="#location"
-                className="ml-6 px-7 py-3 bg-brand-main text-white text-[11px] font-black rounded-full hover:shadow-[0_0_25px_rgba(131,174,55,0.4)] transition-all uppercase tracking-widest"
-              >
-                {t('nav.visitHub')}
-              </a>
             </div>
 
             {/* Mobile Button */}
