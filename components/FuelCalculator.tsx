@@ -2,12 +2,13 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { useAdmin } from '../contexts/AdminContext';
+import { useLanguage } from '../contexts/LanguageContext';
 import { FuelType } from '../types';
 import { Calculator as CalcIcon, RefreshCw } from 'lucide-react';
 
 export const FuelCalculator: React.FC = () => {
   const { fuelPrices } = useAdmin();
-  // Using string type for state ensures compatibility with dynamic fuel types fetched from the database
+  const { t, isRtl } = useLanguage();
   const [selectedFuel, setSelectedFuel] = useState<string>(FuelType.NORMAL);
   const [amountIqd, setAmountIqd] = useState<string>('');
   const [liters, setLiters] = useState<string>('');
@@ -43,15 +44,15 @@ export const FuelCalculator: React.FC = () => {
   };
 
   return (
-    <div className="bg-white rounded-[3rem] shadow-3xl overflow-hidden border border-white/20">
-      <div className="bg-brand-gray p-10 text-white flex items-center justify-between">
-        <div className="flex items-center space-x-4">
+    <div className={`bg-white rounded-[3rem] shadow-3xl overflow-hidden border border-white/20 ${isRtl ? 'text-right' : 'text-left'}`}>
+      <div className={`bg-brand-gray p-10 text-white flex items-center justify-between ${isRtl ? 'flex-row-reverse' : ''}`}>
+        <div className={`flex items-center ${isRtl ? 'space-x-reverse space-x-4' : 'space-x-4'}`}>
           <div className="p-3 bg-brand-main/20 rounded-2xl border border-brand-main/30">
             <CalcIcon className="h-6 w-6 text-brand-main" />
           </div>
           <div>
-            <h3 className="text-xl font-black uppercase tracking-widest">Rate Calculator</h3>
-            <p className="text-brand-light/40 text-[10px] uppercase font-bold tracking-[0.2em]">Live Estimation</p>
+            <h3 className="text-xl font-black uppercase tracking-widest">{t('calc.title')}</h3>
+            <p className="text-brand-light/40 text-[10px] uppercase font-bold tracking-[0.2em]">{t('calc.subtitle')}</p>
           </div>
         </div>
         <motion.button 
@@ -65,7 +66,7 @@ export const FuelCalculator: React.FC = () => {
 
       <div className="p-10 space-y-10">
         <div>
-          <label className="block text-[10px] font-black text-brand-main mb-6 uppercase tracking-[0.3em]">Select Grade</label>
+          <label className="block text-[10px] font-black text-brand-main mb-6 uppercase tracking-[0.3em]">{t('calc.grade')}</label>
           <div className="grid grid-cols-3 gap-3">
             {fuelPrices.map((f) => (
               <button
@@ -90,7 +91,7 @@ export const FuelCalculator: React.FC = () => {
 
         <div className="grid grid-cols-1 gap-8">
           <div className="relative">
-            <label className="block text-[10px] font-black text-brand-main mb-4 uppercase tracking-[0.3em]">Monetary Value (IQD)</label>
+            <label className="block text-[10px] font-black text-brand-main mb-4 uppercase tracking-[0.3em]">{t('calc.monetary')}</label>
             <div className="relative group">
               <input
                 type="number"
@@ -99,10 +100,11 @@ export const FuelCalculator: React.FC = () => {
                   setActiveInput('iqd');
                   setAmountIqd(e.target.value);
                 }}
-                className="w-full bg-brand-light/30 px-6 py-5 rounded-2xl border-2 border-transparent focus:border-brand-main focus:bg-white focus:outline-none transition-all text-2xl font-black text-brand-dark"
+                dir="ltr"
+                className={`w-full bg-brand-light/30 px-6 py-5 rounded-2xl border-2 border-transparent focus:border-brand-main focus:bg-white focus:outline-none transition-all text-2xl font-black text-brand-dark ${isRtl ? 'text-right' : 'text-left'}`}
                 placeholder="0"
               />
-              <span className="absolute right-6 top-1/2 -translate-y-1/2 text-brand-gray/30 font-black text-sm tracking-widest uppercase">IQD</span>
+              <span className={`absolute top-1/2 -translate-y-1/2 text-brand-gray/30 font-black text-sm tracking-widest uppercase ${isRtl ? 'left-6' : 'right-6'}`}>IQD</span>
             </div>
           </div>
 
@@ -115,7 +117,7 @@ export const FuelCalculator: React.FC = () => {
           </div>
 
           <div className="relative">
-            <label className="block text-[10px] font-black text-brand-main mb-4 uppercase tracking-[0.3em]">Fuel Volume (Liters)</label>
+            <label className="block text-[10px] font-black text-brand-main mb-4 uppercase tracking-[0.3em]">{t('calc.volume')}</label>
             <div className="relative group">
               <input
                 type="number"
@@ -124,10 +126,11 @@ export const FuelCalculator: React.FC = () => {
                   setActiveInput('liters');
                   setLiters(e.target.value);
                 }}
-                className="w-full bg-brand-light/30 px-6 py-5 rounded-2xl border-2 border-transparent focus:border-brand-main focus:bg-white focus:outline-none transition-all text-2xl font-black text-brand-dark"
+                dir="ltr"
+                className={`w-full bg-brand-light/30 px-6 py-5 rounded-2xl border-2 border-transparent focus:border-brand-main focus:bg-white focus:outline-none transition-all text-2xl font-black text-brand-dark ${isRtl ? 'text-right' : 'text-left'}`}
                 placeholder="0.00"
               />
-              <span className="absolute right-6 top-1/2 -translate-y-1/2 text-brand-gray/30 font-black text-sm tracking-widest uppercase">Liters</span>
+              <span className={`absolute top-1/2 -translate-y-1/2 text-brand-gray/30 font-black text-sm tracking-widest uppercase ${isRtl ? 'left-6' : 'right-6'}`}>L</span>
             </div>
           </div>
         </div>
@@ -137,10 +140,10 @@ export const FuelCalculator: React.FC = () => {
           animate={{ opacity: 1 }}
           className="bg-brand-dark/5 p-6 rounded-3xl border border-brand-dark/5"
         >
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-bold text-brand-gray uppercase tracking-widest">Base Rate</span>
-            <span className="text-lg font-black text-brand-dark uppercase tracking-tight">
-              {currentPrice} <span className="text-brand-gray text-[10px] opacity-40">IQD/L</span>
+          <div className={`flex items-center justify-between ${isRtl ? 'flex-row-reverse' : ''}`}>
+            <span className="text-xs font-bold text-brand-gray uppercase tracking-widest">{t('calc.baseRate')}</span>
+            <span className={`text-lg font-black text-brand-dark uppercase tracking-tight ${isRtl ? 'flex flex-row-reverse space-x-reverse space-x-2' : ''}`}>
+              {currentPrice} <span className={`text-brand-gray text-[10px] opacity-40 ${isRtl ? 'mr-2' : 'ml-2'}`}>IQD/L</span>
             </span>
           </div>
         </motion.div>

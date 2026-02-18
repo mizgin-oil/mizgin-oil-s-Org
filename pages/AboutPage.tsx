@@ -2,14 +2,16 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { useAdmin } from '../contexts/AdminContext';
+import { useLanguage } from '../contexts/LanguageContext';
 import { OWNER_INFO, LEGACY_BRAND_IMAGE } from '../constants';
 import { MessageCircle, Clock, Award, MapPin, CheckCircle2, History } from 'lucide-react';
 
 const AboutPage: React.FC = () => {
   const { contactPhone } = useAdmin();
+  const { t, isRtl } = useLanguage();
 
   return (
-    <div className="bg-brand-light">
+    <div className={`bg-brand-light ${isRtl ? 'rtl' : 'ltr'}`}>
       {/* Header */}
       <section className="pt-48 pb-32 bg-brand-gray relative overflow-hidden">
         <div className="absolute inset-0 z-0">
@@ -29,7 +31,7 @@ const AboutPage: React.FC = () => {
           >
             <span className="text-brand-main font-black uppercase tracking-[0.5em] text-xs mb-8 block">Duhok Excellence</span>
             <h1 className="text-6xl md:text-9xl font-black text-white mb-8 tracking-tighter uppercase leading-[0.8]">
-              The <span className="text-brand-main italic">Legacy.</span>
+              {t('about.heritage').split('.')[0]}<span className="text-brand-main italic">.</span>
             </h1>
             <div className="text-3xl md:text-5xl font-arabic text-brand-main mb-12 opacity-80" dir="rtl">
               {OWNER_INFO.localName}
@@ -41,28 +43,28 @@ const AboutPage: React.FC = () => {
       {/* Heritage & Brand Image Section */}
       <section className="py-32 relative">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-24 items-center">
+          <div className={`grid grid-cols-1 lg:grid-cols-2 gap-24 items-center ${isRtl ? 'lg:flex-row-reverse' : ''}`}>
             <motion.div
-              initial={{ opacity: 0, x: -50 }}
+              initial={{ opacity: 0, x: isRtl ? 50 : -50 }}
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
-              className="relative order-2 lg:order-1"
+              className={`relative order-2 lg:order-1 ${isRtl ? 'text-right' : 'text-left'}`}
             >
               <div className="absolute -inset-10 bg-brand-main/5 blur-[100px] rounded-full pointer-events-none" />
               <div className="relative z-10 space-y-10">
-                <div className="flex items-center space-x-4">
+                <div className={`flex items-center space-x-4 ${isRtl ? 'space-x-reverse justify-end' : ''}`}>
                   <div className="w-12 h-12 bg-brand-main/10 rounded-xl flex items-center justify-center">
                     <History className="h-6 w-6 text-brand-main" />
                   </div>
-                  <span className="text-brand-main font-black uppercase tracking-[0.4em] text-xs block">Established 2005</span>
+                  <span className="text-brand-main font-black uppercase tracking-[0.4em] text-xs block">{t('about.established')}</span>
                 </div>
                 <h2 className="text-6xl font-black text-brand-dark uppercase tracking-tighter leading-none">
-                  A Symbol Of <br /> <span className="text-brand-main">Reliability.</span>
+                  {t('about.symbol').split(' ').slice(0, -1).join(' ')} <br /> <span className="text-brand-main">{t('about.symbol').split(' ').slice(-1)}</span>
                 </h2>
                 <p className="text-2xl text-brand-gray font-light leading-relaxed">
-                  "Since our first station opened on Zakho Way, MIZGIN OIL has stood as a beacon of quality in Duhok. Our identity is rooted in the purity of the energy we provide and the trust of the drivers we serve."
+                  "{t('about.desc')}"
                 </p>
-                <div className="flex items-center space-x-4 pt-6">
+                <div className={`flex items-center space-x-4 pt-6 ${isRtl ? 'space-x-reverse justify-end' : ''}`}>
                   <div className="w-16 h-px bg-brand-main" />
                   <span className="text-xl font-black text-brand-dark uppercase tracking-widest">{OWNER_INFO.name}</span>
                 </div>
@@ -83,7 +85,7 @@ const AboutPage: React.FC = () => {
                   className="w-full h-full object-contain transition-transform duration-1000 group-hover:scale-110"
                 />
               </div>
-              <div className="absolute -bottom-10 -left-10 w-48 h-48 bg-brand-dark p-8 rounded-[3rem] shadow-3xl flex flex-col justify-center items-center text-white text-center border-4 border-white">
+              <div className={`absolute -bottom-10 w-48 h-48 bg-brand-dark p-8 rounded-[3rem] shadow-3xl flex flex-col justify-center items-center text-white text-center border-4 border-white ${isRtl ? '-right-10' : '-left-10'}`}>
                 <Award className="h-10 w-10 mb-2 text-brand-main" />
                 <span className="text-[10px] uppercase font-black tracking-widest text-white/80">Premium Brand Selection</span>
               </div>
@@ -122,9 +124,9 @@ const AboutPage: React.FC = () => {
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ delay: i * 0.1 }}
                 viewport={{ once: true }}
-                className="p-12 bg-white/5 rounded-[3rem] border border-white/10 hover:border-brand-main transition-all duration-500 group"
+                className={`p-12 bg-white/5 rounded-[3rem] border border-white/10 hover:border-brand-main transition-all duration-500 group ${isRtl ? 'text-right' : 'text-left'}`}
               >
-                <div className="mb-8 group-hover:scale-110 transition-transform">{card.icon}</div>
+                <div className={`mb-8 group-hover:scale-110 transition-transform ${isRtl ? 'flex justify-end' : ''}`}>{card.icon}</div>
                 <h4 className="text-xs font-black uppercase tracking-[0.3em] text-brand-main mb-6">{card.title}</h4>
                 <p className="text-2xl font-black mb-2 uppercase tracking-tight leading-tight">{card.content}</p>
                 <p className="text-brand-gray text-sm font-light uppercase tracking-widest">{card.sub}</p>
@@ -148,11 +150,11 @@ const AboutPage: React.FC = () => {
             <p className="text-xl text-brand-gray leading-relaxed font-light mb-16">
               {OWNER_INFO.description}
             </p>
-            <div className="flex flex-wrap justify-center gap-12">
+            <div className={`flex flex-wrap justify-center gap-12 ${isRtl ? 'flex-row-reverse' : ''}`}>
               {[
-                "Certified Purity", "Elite Maintenance", "Community First", "Global Standards"
+                t('about.purity'), t('about.maintenance'), t('about.community'), t('about.global')
               ].map((item, i) => (
-                <div key={i} className="flex items-center space-x-3 text-brand-dark font-black uppercase tracking-[0.2em] text-[10px]">
+                <div key={i} className={`flex items-center space-x-3 text-brand-dark font-black uppercase tracking-[0.2em] text-[10px] ${isRtl ? 'space-x-reverse' : ''}`}>
                   <CheckCircle2 className="h-5 w-5 text-brand-main" />
                   <span>{item}</span>
                 </div>

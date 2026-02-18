@@ -6,6 +6,8 @@ export enum FuelType {
   SUPER = 'Super'
 }
 
+export type Language = 'en' | 'ku-ba' | 'ku-so' | 'ar' | 'tr';
+
 export interface FuelPrice {
   type: string;
   pricePerLiter: number;

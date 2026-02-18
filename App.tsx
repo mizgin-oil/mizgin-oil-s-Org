@@ -1,7 +1,9 @@
+
 import React, { Suspense, lazy } from 'react';
 import { HashRouter as Router, Routes, Route } from 'react-router-dom';
 import { Layout } from './components/Layout';
 import { AdminProvider } from './contexts/AdminContext';
+import { LanguageProvider } from './contexts/LanguageContext';
 import { motion } from 'framer-motion';
 
 // Lazy load pages for performance
@@ -40,20 +42,22 @@ const LoadingFallback = () => (
 
 function App() {
   return (
-    <AdminProvider>
-      <Router>
-        <Layout>
-          <Suspense fallback={<LoadingFallback />}>
-            <Routes>
-              <Route path="/" element={<HomePage />} />
-              <Route path="/services" element={<ServicesPage />} />
-              <Route path="/about" element={<AboutPage />} />
-              <Route path="/admin" element={<AdminPage />} />
-            </Routes>
-          </Suspense>
-        </Layout>
-      </Router>
-    </AdminProvider>
+    <LanguageProvider>
+      <AdminProvider>
+        <Router>
+          <Layout>
+            <Suspense fallback={<LoadingFallback />}>
+              <Routes>
+                <Route path="/" element={<HomePage />} />
+                <Route path="/services" element={<ServicesPage />} />
+                <Route path="/about" element={<AboutPage />} />
+                <Route path="/admin" element={<AdminPage />} />
+              </Routes>
+            </Suspense>
+          </Layout>
+        </Router>
+      </AdminProvider>
+    </LanguageProvider>
   );
 }
 
