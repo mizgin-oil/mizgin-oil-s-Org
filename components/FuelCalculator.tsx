@@ -68,24 +68,29 @@ export const FuelCalculator: React.FC = () => {
         <div>
           <label className="block text-[10px] font-black text-brand-main mb-6 uppercase tracking-[0.3em]">{t('calc.grade')}</label>
           <div className="grid grid-cols-3 gap-3">
-            {fuelPrices.map((f) => (
-              <button
-                key={f.type}
-                onClick={() => setSelectedFuel(f.type)}
-                className={`group py-5 px-3 rounded-2xl border-2 transition-all relative overflow-hidden ${
-                  selectedFuel === f.type
-                    ? 'border-brand-main bg-brand-main text-white shadow-xl scale-105'
-                    : 'border-brand-light bg-brand-light/30 text-brand-gray hover:border-brand-main/30'
-                }`}
-              >
-                <div className="relative z-10">
-                  <span className="block text-xs font-black uppercase tracking-widest mb-1">{f.type}</span>
-                  <span className={`block text-[10px] font-bold opacity-60 ${selectedFuel === f.type ? 'text-white' : ''}`}>
-                    {f.pricePerLiter} IQD
-                  </span>
-                </div>
-              </button>
-            ))}
+            {fuelPrices.map((f) => {
+              const fuelKey = f.type.toLowerCase().replace(/\s+/g, '_');
+              const displayName = t(`fuel.${fuelKey}.name`) || f.type;
+
+              return (
+                <button
+                  key={f.type}
+                  onClick={() => setSelectedFuel(f.type)}
+                  className={`group py-5 px-3 rounded-2xl border-2 transition-all relative overflow-hidden ${
+                    selectedFuel === f.type
+                      ? 'border-brand-main bg-brand-main text-white shadow-xl scale-105'
+                      : 'border-brand-light bg-brand-light/30 text-brand-gray hover:border-brand-main/30'
+                  }`}
+                >
+                  <div className="relative z-10">
+                    <span className="block text-xs font-black uppercase tracking-widest mb-1">{displayName}</span>
+                    <span className={`block text-[10px] font-bold opacity-60 ${selectedFuel === f.type ? 'text-white' : ''}`}>
+                      {f.pricePerLiter} IQD
+                    </span>
+                  </div>
+                </button>
+              );
+            })}
           </div>
         </div>
 

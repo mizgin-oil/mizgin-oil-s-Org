@@ -10,6 +10,27 @@ const AboutPage: React.FC = () => {
   const { contactPhone } = useAdmin();
   const { t, isRtl } = useLanguage();
 
+  const legacyPoints = [
+    { 
+      icon: <MapPin className="h-8 w-8 text-brand-main" />, 
+      title: t('about.primeLocation'), 
+      content: t('home.location.address'), 
+      sub: t('about.heartOfZakho') 
+    },
+    { 
+      icon: <MessageCircle className="h-8 w-8 text-brand-main" />, 
+      title: t('about.clientSupport'), 
+      content: contactPhone, 
+      sub: t('about.concierge247') 
+    },
+    { 
+      icon: <Clock className="h-8 w-8 text-brand-main" />, 
+      title: t('about.roundTheClock'), 
+      content: t('about.uninterrupted'), 
+      sub: t('about.fuelingJourney') 
+    }
+  ];
+
   return (
     <div className={`bg-brand-light ${isRtl ? 'rtl' : 'ltr'}`}>
       {/* Header */}
@@ -29,7 +50,7 @@ const AboutPage: React.FC = () => {
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 1 }}
           >
-            <span className="text-brand-main font-black uppercase tracking-[0.5em] text-xs mb-8 block">Duhok Excellence</span>
+            <span className="text-brand-main font-black uppercase tracking-[0.5em] text-xs mb-8 block">{t('footer.excellence')}</span>
             <h1 className="text-6xl md:text-9xl font-black text-white mb-8 tracking-tighter uppercase leading-[0.8]">
               {t('about.heritage').split('.')[0]}<span className="text-brand-main italic">.</span>
             </h1>
@@ -87,7 +108,7 @@ const AboutPage: React.FC = () => {
               </div>
               <div className={`absolute -bottom-10 w-48 h-48 bg-brand-dark p-8 rounded-[3rem] shadow-3xl flex flex-col justify-center items-center text-white text-center border-4 border-white ${isRtl ? '-right-10' : '-left-10'}`}>
                 <Award className="h-10 w-10 mb-2 text-brand-main" />
-                <span className="text-[10px] uppercase font-black tracking-widest text-white/80">Premium Brand Selection</span>
+                <span className="text-[10px] uppercase font-black tracking-widest text-white/80">{t('about.premiumBrand')}</span>
               </div>
             </motion.div>
           </div>
@@ -98,26 +119,7 @@ const AboutPage: React.FC = () => {
       <section className="py-32 bg-brand-dark text-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
-            {[
-              { 
-                icon: <MapPin className="h-8 w-8 text-brand-main" />, 
-                title: "Prime Location", 
-                content: OWNER_INFO.address, 
-                sub: "Heart of Zakho Way, Duhok" 
-              },
-              { 
-                icon: <MessageCircle className="h-8 w-8 text-brand-main" />, 
-                title: "Client Support", 
-                content: contactPhone, 
-                sub: "Professional Concierge 24/7" 
-              },
-              { 
-                icon: <Clock className="h-8 w-8 text-brand-main" />, 
-                title: "Round-the-clock", 
-                content: "Uninterrupted Service", 
-                sub: "Fueling your journey day and night" 
-              }
-            ].map((card, i) => (
+            {legacyPoints.map((card, i) => (
               <motion.div
                 key={i}
                 initial={{ opacity: 0, y: 20 }}
@@ -128,7 +130,7 @@ const AboutPage: React.FC = () => {
               >
                 <div className={`mb-8 group-hover:scale-110 transition-transform ${isRtl ? 'flex justify-end' : ''}`}>{card.icon}</div>
                 <h4 className="text-xs font-black uppercase tracking-[0.3em] text-brand-main mb-6">{card.title}</h4>
-                <p className="text-2xl font-black mb-2 uppercase tracking-tight leading-tight">{card.content}</p>
+                <p className="text-2xl font-black mb-2 uppercase tracking-tight leading-tight" dir="ltr">{card.content}</p>
                 <p className="text-brand-gray text-sm font-light uppercase tracking-widest">{card.sub}</p>
               </motion.div>
             ))}
@@ -145,10 +147,10 @@ const AboutPage: React.FC = () => {
             viewport={{ once: true }}
           >
             <h2 className="text-5xl font-black text-brand-dark mb-12 uppercase tracking-tighter leading-none">
-              A Standard <br /> <span className="text-brand-main italic">Defined By Honor.</span>
+              {t('about.standard')} <br /> <span className="text-brand-main italic">{t('about.definedByHonor')}</span>
             </h2>
             <p className="text-xl text-brand-gray leading-relaxed font-light mb-16">
-              {OWNER_INFO.description}
+              {t('about.fullDesc')}
             </p>
             <div className={`flex flex-wrap justify-center gap-12 ${isRtl ? 'flex-row-reverse' : ''}`}>
               {[

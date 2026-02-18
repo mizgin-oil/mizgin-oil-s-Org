@@ -2,6 +2,11 @@
 export const translations = {
   en: {
     dir: 'ltr',
+    fuel: {
+      normal_kar: { name: 'Normal Kar', desc: 'Standard performance fuel for everyday commuting and reliability.' },
+      enhanced: { name: 'Enhanced', desc: 'Optimized combustion for better mileage and engine cleanliness.' },
+      super: { name: 'Super', desc: 'High-octane premium blend for maximum power and engine protection.' }
+    },
     nav: {
       experience: 'Experience',
       services: 'Services',
@@ -48,7 +53,9 @@ export const translations = {
         schedule: 'Schedule',
         status: 'Always Open',
         days: '365 Days a Year',
-        navBtn: 'Instant Navigation'
+        navBtn: 'Instant Navigation',
+        address: 'Zakho Way, Duhok',
+        dist: 'Main Highway, Near Tanahi District'
       }
     },
     services: {
@@ -75,18 +82,56 @@ export const translations = {
       purity: 'Certified Purity',
       maintenance: 'Elite Maintenance',
       community: 'Community First',
-      global: 'Global Standards'
+      global: 'Global Standards',
+      primeLocation: 'Prime Location',
+      clientSupport: 'Client Support',
+      roundTheClock: 'Round-the-clock',
+      uninterrupted: 'Uninterrupted Service',
+      concierge247: 'Professional Concierge 24/7',
+      heartOfZakho: 'Heart of Zakho Way, Duhok',
+      fuelingJourney: 'Fueling your journey day and night',
+      premiumBrand: 'Premium Brand Selection',
+      definedByHonor: 'Defined By Honor.',
+      standard: 'A Standard',
+      fullDesc: 'MIZGIN OIL has been a cornerstone of the Duhok community, providing high-quality energy solutions with a focus on trust and excellence since its inception.'
+    },
+    admin: {
+      access: 'Admin Access',
+      email: 'Admin Email',
+      password: 'Password',
+      unlock: 'Unlock Dashboard',
+      controlPanel: 'Control Panel',
+      logout: 'Logout',
+      fuelRates: 'Fuel Rates',
+      addFuel: 'Add Fuel',
+      addCategory: 'Add New Category',
+      contactPhone: 'Contact Phone',
+      deleteConfirm: 'Delete this item?',
+      saving: 'Saving...',
+      noItems: 'No items added yet',
+      categoryPlaceholder: 'e.g. Car Wash, Market, Café',
+      itemName: 'Item Name',
+      priceIqd: 'Price IQD',
+      fuelName: 'Fuel Name',
+      settingsSaved: 'Settings Saved',
+      dashboardUnlocked: 'Dashboard Unlocked'
     },
     footer: {
       eliteChoice: 'The Elite Choice',
       tagline: 'Elevating the fueling experience in Duhok through precision, quality, and an unwavering commitment to our community.',
       concierge: 'Concierge',
       connect: 'Connect',
-      rights: 'All Rights Reserved.'
+      rights: 'All Rights Reserved.',
+      excellence: 'Duhok Excellence Since 2005'
     }
   },
   'ku-ba': {
     dir: 'rtl',
+    fuel: {
+      normal_kar: { name: 'نۆرماڵ کار', desc: 'سوتەمەنیەکا ستاندارد بۆ هاتن و چۆنا ڕۆژانە و پشتڕاستیێ.' },
+      enhanced: { name: 'ئین هانسد', desc: 'سوتەمەنیەکا باش بۆ پاقژیا بزوێنەری و مەسرەفەکێ کێمتر.' },
+      super: { name: 'سوپەر', desc: 'باشترین جۆرێ سوتەمەنیێ بۆ هێزا زێدە و پاراستنا بزوێنەری.' }
+    },
     nav: {
       experience: 'ئەزموون',
       services: 'خزمەتگوزاری',
@@ -133,7 +178,9 @@ export const translations = {
         schedule: 'خشتەیێ دەوامی',
         status: 'هەمی دەما ڤەکریە',
         days: '٣٦٥ ڕۆژێن سالێ',
-        navBtn: 'نەخشێ ڕێگایێ'
+        navBtn: 'نەخشێ ڕێگایێ',
+        address: 'ڕێکا زاخۆ، دهۆک',
+        dist: 'جادەیا سەرەکی، نێزیک تناهی'
       }
     },
     services: {
@@ -160,18 +207,56 @@ export const translations = {
       purity: 'پاقژیا پشتڕاستکری',
       maintenance: 'پاراستنا نایاب',
       community: 'بەرهەمی جڤاکی',
-      global: 'ستانداردێن جیهانی'
+      global: 'ستانداردێن جیهانی',
+      primeLocation: 'ناونیشانێ سەرەکی',
+      clientSupport: 'پشتیوانیا کڕیاران',
+      roundTheClock: '٢٤ دەمژمێری',
+      uninterrupted: 'خزمەتگوزاریا بەردەوام',
+      concierge247: 'خزمەتگوزاریا پیشەیی ٢٤/٧',
+      heartOfZakho: 'دڵێ ڕێکا زاخۆ، دهۆک',
+      fuelingJourney: 'هێزدانا گەشتا تە شەڤ و ڕۆژ',
+      premiumBrand: 'هەڵبژاردەی براندێ نایاب',
+      definedByHonor: 'ب ڕێز و شکۆڤە.',
+      standard: 'ستانداردەكا',
+      fullDesc: 'مزگین ئۆیل بەردەوام خزمەتا خەڵکێ دهۆکێ دکەت ب دابینکرنا وزەکا کوالێتی بلند و باوەری.'
+    },
+    admin: {
+      access: 'چوونەژوورا ئەدمینی',
+      email: 'ئیمەیڵێ ئەدمینی',
+      password: 'وشەی نهێنی',
+      unlock: 'ڤەکرنا داشبۆردێ',
+      controlPanel: 'تەختەیێ کۆنترۆڵێ',
+      logout: 'چوونەدەر',
+      fuelRates: 'نرخێن سوتەمەنیێ',
+      addFuel: 'زێدەکرنا سوتەمەنیێ',
+      addCategory: 'زێدەکرنا پۆلێنەکا نوو',
+      contactPhone: 'تەلەفۆنا پەیوەندیێ',
+      deleteConfirm: 'د پشتڕاستی ژ ژێبرنا ڤێ؟',
+      saving: 'دهێتە پاراستن...',
+      noItems: 'چ بڕگە نەهاتینە زێدەکرن',
+      categoryPlaceholder: 'بۆ نموونە: شۆشتنا ترۆمبێلان، مارکێت',
+      itemName: 'ناڤێ بڕگەیێ',
+      priceIqd: 'نرخ ب دینار',
+      fuelName: 'ناڤێ سوتەمەنیێ',
+      settingsSaved: 'ڕێکخستن هاتنە پاراستن',
+      dashboardUnlocked: 'داشبۆرد هاتە ڤەکرن'
     },
     footer: {
       eliteChoice: 'هەڵبژاردنا نایاب',
       tagline: 'بلندکرنا ئەزموونا سوتەمەنیێ ل دهۆکێ ب ڕێکا دۆروستی و کوالێتیێ.',
       concierge: 'خزمەتگوزاریێن گشتی',
       connect: 'پەیوەندی',
-      rights: 'هەمی ماف پاراستینە.'
+      rights: 'هەمی ماف پاراستینە.',
+      excellence: 'دهۆک ئەکسلێنس ژ سالا ٢٠٠٥'
     }
   },
   'ku-so': {
     dir: 'rtl',
+    fuel: {
+      normal_kar: { name: 'نۆرماڵ کار', desc: 'سووتەمەنییەکی ستاندارد بۆ هاتوچۆی ڕۆژانە و متمانە.' },
+      enhanced: { name: 'ئین هانسد', desc: 'سووتەمەنییەکی باش بۆ پاکی بزوێنەر و مەسرەفی کەمتر.' },
+      super: { name: 'سوپەر', desc: 'باشترین جۆری سووتەمەنی بۆ هێزی زۆر و پاراستنی بزوێنەر.' }
+    },
     nav: {
       experience: 'ئەزموون',
       services: 'خزمەتگوزارییەکان',
@@ -217,8 +302,10 @@ export const translations = {
         label: 'شوێن',
         schedule: 'خشتە',
         status: 'هەمیشە کراوەیە',
-        days: '٣٦٥ ڕۆژ لە ساڵێکدا',
-        navBtn: 'ڕێگای ڕاستەوخۆ'
+        days: '٣٥٥ ڕۆژ لە ساڵێکدا',
+        navBtn: 'ڕێگای ڕاستەوخۆ',
+        address: 'ڕێگای زاخۆ، دهۆک',
+        dist: 'شەقامی سەرەکی، نزیک تناهی'
       }
     },
     services: {
@@ -245,18 +332,56 @@ export const translations = {
       purity: 'پاکی پشتڕاستکراو',
       maintenance: 'پاراستنی نایاب',
       community: 'گرنگیدان بە کۆمەڵگا',
-      global: 'ستانداردە جیهانییەکان'
+      global: 'ستانداردە جیهانییەکان',
+      primeLocation: 'شوێنی سەرەکی',
+      clientSupport: 'پشتیوانی کڕیار',
+      roundTheClock: '٢٤ کاتژمێری',
+      uninterrupted: 'خزمەتگوزاری بەردەوام',
+      concierge247: 'خزمەتگوزاری پیشەیی ٢٤/٧',
+      heartOfZakho: 'ناو جەرگەی ڕێگای زاخۆ، دهۆک',
+      fuelingJourney: 'وزەدان بە گەشتەکەت شەو و ڕۆژ',
+      premiumBrand: 'هەڵبژاردەی براندی نایاب',
+      definedByHonor: 'بە ڕێز و شکۆوە.',
+      standard: 'ستانداردێک',
+      fullDesc: 'مزگین ئۆیل هەمیشە هەوڵدەدات باشترین سووتەمەنی و خزمەتگوزاری پێشکەش بە دهۆک بکات.'
+    },
+    admin: {
+      access: 'چوونەژووری ئەدمین',
+      email: 'ئیمەیڵی ئەدمین',
+      password: 'وشەی نهێنی',
+      unlock: 'کردنەوەی داشبۆرد',
+      controlPanel: 'تەختەی کۆنترۆڵ',
+      logout: 'چوونەدەرەوە',
+      fuelRates: 'نرخی سووتەمەنی',
+      addFuel: 'زێدەکردنی سووتەمەنی',
+      addCategory: 'زێدەکردنی پۆلێنی نوێ',
+      contactPhone: 'ژمارەی مۆبایل',
+      deleteConfirm: 'دڵنیای لە سڕینەوە؟',
+      saving: 'پاشەکەوت دەکرێت...',
+      noItems: 'هیچ بڕگەیەک نییە',
+      categoryPlaceholder: 'نموونە: غەسل، مارکێت',
+      itemName: 'ناوی بڕگە',
+      priceIqd: 'نرخ بە دینار',
+      fuelName: 'ناوی سووتەمەنی',
+      settingsSaved: 'ڕێکخستنەکان پارێزران',
+      dashboardUnlocked: 'داشبۆرد کرایەوە'
     },
     footer: {
       eliteChoice: 'هەڵبژاردەی نایاب',
       tagline: 'بەرزکردنەوەی ئەزموونی سووتەمەنی لە دهۆک لە ڕێگەی وردی و کوالێتییەوە.',
       concierge: 'خزمەتگوزارییەکان',
       connect: 'پەیوەندی',
-      rights: 'هەموو مافەکان پارێزراون.'
+      rights: 'هەموو مافەکان پارێزراون.',
+      excellence: 'دهۆک ئێکسلێنس لە ٢٠٠٥ـەوە'
     }
   },
   ar: {
     dir: 'rtl',
+    fuel: {
+      normal_kar: { name: 'نورمال كار', desc: 'وقود قياسي للتنقل اليومي والموثوقية العالية.' },
+      enhanced: { name: 'محسن', desc: 'احتراق محسّن لأداء أفضل للمحرك واستهلاك أقل.' },
+      super: { name: 'سوبر', desc: 'مزيج فائق الأوكتان لأقصى قوة وحماية للمحركات الحديثة.' }
+    },
     nav: {
       experience: 'الخبرة',
       services: 'الخدمات',
@@ -303,7 +428,9 @@ export const translations = {
         schedule: 'الجدول الزمني',
         status: 'مفتوح دائماً',
         days: '٣٦٥ يوماً في السنة',
-        navBtn: 'التنقل الفوري'
+        navBtn: 'التنقل الفوري',
+        address: 'طريق زاخو، دهوك',
+        dist: 'الطريق السريع، قرب تناهي'
       }
     },
     services: {
@@ -330,18 +457,56 @@ export const translations = {
       purity: 'نقاء معتمد',
       maintenance: 'صيانة ممتازة',
       community: 'المجتمع أولاً',
-      global: 'معايير عالمية'
+      global: 'معايير عالمية',
+      primeLocation: 'الموقع الرئيسي',
+      clientSupport: 'دعم العملاء',
+      roundTheClock: 'على مدار الساعة',
+      uninterrupted: 'خدمة مستمرة',
+      concierge247: 'خدمة احترافية ٢٤/٧',
+      heartOfZakho: 'قلب طريق زاخو، دهوك',
+      fuelingJourney: 'تزويد رحلتك بالطاقة ليلاً ونهاراً',
+      premiumBrand: 'اختيار العلامة التجارية المتميزة',
+      definedByHonor: 'بكل فخر وشرف.',
+      standard: 'معيار',
+      fullDesc: 'كانت مزكين أويل حجر الزاوية في مجتمع دهوك، حيث توفر حلول طاقة عالية الجودة.'
+    },
+    admin: {
+      access: 'دخول المسؤول',
+      email: 'البريد الإلكتروني',
+      password: 'كلمة المرور',
+      unlock: 'فتح لوحة التحكم',
+      controlPanel: 'لوحة التحكم',
+      logout: 'تسجيل الخروج',
+      fuelRates: 'أسعار الوقود',
+      addFuel: 'إضافة وقود',
+      addCategory: 'إضافة فئة جديدة',
+      contactPhone: 'هاتف التواصل',
+      deleteConfirm: 'هل أنت متأكد من الحذف؟',
+      saving: 'جاري الحفظ...',
+      noItems: 'لا يوجد عناصر مضافة',
+      categoryPlaceholder: 'مثل: غسيل السيارات، الماركت',
+      itemName: 'اسم العنصر',
+      priceIqd: 'السعر بالدينار',
+      fuelName: 'اسم الوقود',
+      settingsSaved: 'تم حفظ الإعدادات',
+      dashboardUnlocked: 'تم فتح لوحة التحكم'
     },
     footer: {
       eliteChoice: 'الخيار النخبة',
       tagline: 'الارتقاء بتجربة التزود بالوقود في دهوك من خلال الدقة والجودة.',
       concierge: 'الخدمات',
       connect: 'تواصل معنا',
-      rights: 'جميع الحقوق محفوظة.'
+      rights: 'جميع الحقوق محفوظة.',
+      excellence: 'دهوك التميز منذ ٢٠٠٥'
     }
   },
   tr: {
     dir: 'ltr',
+    fuel: {
+      normal_kar: { name: 'Normal Kar', desc: 'Günlük ulaşım ve yüksek güvenilirlik için standart yakıt.' },
+      enhanced: { name: 'Enhanced', desc: 'Daha iyi motor performansı ve yakıt tasarrufu için optimize edilmiştir.' },
+      super: { name: 'Super', desc: 'Maksimum güç ve motor koruması için yüksek oktanlı premium karışım.' }
+    },
     nav: {
       experience: 'Deneyim',
       services: 'Hizmetler',
@@ -388,7 +553,9 @@ export const translations = {
         schedule: 'Program',
         status: 'Daima Açık',
         days: 'Yılda 365 Gün',
-        navBtn: 'Anında Navigasyon'
+        navBtn: 'Anında Navigasyon',
+        address: 'Zaho Yolu, Duhok',
+        dist: 'Ana Karayolu, Tanahi Yakını'
       }
     },
     services: {
@@ -415,14 +582,47 @@ export const translations = {
       purity: 'Onaylı Saflık',
       maintenance: 'Üstün Bakım',
       community: 'Önce Toplum',
-      global: 'Dünya Standartları'
+      global: 'Dünya Standartları',
+      primeLocation: 'Birinci Sınıf Konum',
+      clientSupport: 'Müşteri Desteği',
+      roundTheClock: 'Günün Her Saati',
+      uninterrupted: 'Kesintisiz Hizmet',
+      concierge247: 'Profesyonel 7/24 Hizmet',
+      heartOfZakho: 'Zaho Yolu\'nun Kalbi, Duhok',
+      fuelingJourney: 'Yolculuğunuzu gece gündüz besliyoruz',
+      premiumBrand: 'Premium Marka Seçimi',
+      definedByHonor: 'Onurla Tanımlanır.',
+      standard: 'Bir Standart',
+      fullDesc: 'Mizgin Oil, kuruluşundan bu yana Duhok toplumunun temel taşlarından biri olmuştur.'
+    },
+    admin: {
+      access: 'Yönetici Erişimi',
+      email: 'Yönetici E-postası',
+      password: 'Şifre',
+      unlock: 'Paneli Aç',
+      controlPanel: 'Kontrol Paneli',
+      logout: 'Çıkış Yap',
+      fuelRates: 'Yakıt Oranları',
+      addFuel: 'Yakıt Ekle',
+      addCategory: 'Yeni Kategori Ekle',
+      contactPhone: 'İletişim Telefonu',
+      deleteConfirm: 'Bunu silmek istediğinizden emin misiniz?',
+      saving: 'Kaydediliyor...',
+      noItems: 'Henüz öğe eklenmedi',
+      categoryPlaceholder: 'örn. Araç Yıkama, Market, Kafe',
+      itemName: 'Öğe Adı',
+      priceIqd: 'Fiyat IQD',
+      fuelName: 'Yakıt Adı',
+      settingsSaved: 'Ayarlar Kaydedildi',
+      dashboardUnlocked: 'Panel Açıldı'
     },
     footer: {
       eliteChoice: 'Seçkin Tercih',
       tagline: 'Duhok\'taki yakıt deneyimini hassasiyet ve kaliteyle yükseltiyoruz.',
       concierge: 'Hizmetler',
       connect: 'Bağlantı',
-      rights: 'Tüm Hakları Saklıdır.'
+      rights: 'Tüm Hakları Saklıdır.',
+      excellence: '2005\'ten Beri Duhok Mükemmelliği'
     }
   }
 };

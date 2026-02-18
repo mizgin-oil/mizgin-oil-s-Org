@@ -6,7 +6,6 @@ import { useAdmin } from '../contexts/AdminContext';
 import { useLanguage } from '../contexts/LanguageContext';
 import { FuelCalculator } from '../components/FuelCalculator';
 import { Zap, ShieldCheck, Star, Fuel, ArrowRight, ArrowUpRight, Droplets, ArrowLeft } from 'lucide-react';
-import { OWNER_INFO } from '../constants';
 
 const getFuelIcon = (type: string) => {
   const t = type.toLowerCase();
@@ -54,7 +53,7 @@ const HomePage: React.FC = () => {
               <span className="text-brand-main italic drop-shadow-[0_0_40px_rgba(131,174,55,0.4)]">{t('hero.sub')}</span>
             </h1>
             <p className="text-xl md:text-3xl text-white/90 max-w-4xl mx-auto mb-16 font-medium leading-relaxed tracking-tight">
-              {OWNER_INFO.address} — {OWNER_INFO.location}
+              {t('home.location.address')} — {t('home.location.dist')}
             </p>
             <div className={`flex flex-col sm:flex-row gap-8 justify-center items-center ${isRtl ? 'sm:flex-row-reverse' : ''}`}>
               <motion.button 
@@ -101,33 +100,39 @@ const HomePage: React.FC = () => {
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
-            {fuelPrices.map((fuel, i) => (
-              <motion.div 
-                key={fuel.type}
-                initial={{ opacity: 0, y: 40 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ delay: i * 0.1, duration: 0.6 }}
-                viewport={{ once: true }}
-                whileHover={{ y: -15 }}
-                className="group relative p-12 bg-white rounded-[4rem] shadow-[0_50px_100px_-25px_rgba(0,0,0,0.06)] border border-white hover:border-brand-main transition-all duration-700 overflow-hidden"
-              >
-                <div className="absolute top-0 right-0 -mr-10 -mt-10 w-40 h-40 bg-brand-main/5 rounded-full blur-3xl group-hover:bg-brand-main/15 transition-colors duration-700" />
-                
-                <div className={`relative z-10 ${isRtl ? 'text-right' : 'text-left'}`}>
-                  <div className={`bg-brand-light w-24 h-24 rounded-[2rem] flex items-center justify-center mb-12 group-hover:scale-110 group-hover:bg-brand-main group-hover:text-white transition-all duration-700 ${isRtl ? 'mr-0 ml-auto' : ''}`}>
-                    {getFuelIcon(fuel.type)}
+            {fuelPrices.map((fuel, i) => {
+              const fuelKey = fuel.type.toLowerCase().replace(/\s+/g, '_');
+              const displayName = t(`fuel.${fuelKey}.name`) || fuel.type;
+              const displayDesc = t(`fuel.${fuelKey}.desc`) || fuel.description;
+
+              return (
+                <motion.div 
+                  key={fuel.type}
+                  initial={{ opacity: 0, y: 40 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  transition={{ delay: i * 0.1, duration: 0.6 }}
+                  viewport={{ once: true }}
+                  whileHover={{ y: -15 }}
+                  className="group relative p-12 bg-white rounded-[4rem] shadow-[0_50px_100px_-25px_rgba(0,0,0,0.06)] border border-white hover:border-brand-main transition-all duration-700 overflow-hidden"
+                >
+                  <div className="absolute top-0 right-0 -mr-10 -mt-10 w-40 h-40 bg-brand-main/5 rounded-full blur-3xl group-hover:bg-brand-main/15 transition-colors duration-700" />
+                  
+                  <div className={`relative z-10 ${isRtl ? 'text-right' : 'text-left'}`}>
+                    <div className={`bg-brand-light w-24 h-24 rounded-[2rem] flex items-center justify-center mb-12 group-hover:scale-110 group-hover:bg-brand-main group-hover:text-white transition-all duration-700 ${isRtl ? 'mr-0 ml-auto' : ''}`}>
+                      {getFuelIcon(fuel.type)}
+                    </div>
+                    <h3 className="text-4xl font-black text-brand-dark mb-5 tracking-tight uppercase">{displayName}</h3>
+                    <div className={`flex items-baseline mb-8 ${isRtl ? 'flex-row-reverse space-x-reverse' : ''}`}>
+                      <span className="text-6xl font-black text-brand-main tracking-tighter">{fuel.pricePerLiter}</span>
+                      <span className={`${isRtl ? 'mr-4' : 'ml-4'} text-brand-gray font-black uppercase tracking-widest text-[11px] opacity-40 whitespace-nowrap`}>
+                        {t('prices.perLiter')}
+                      </span>
+                    </div>
+                    <p className="text-brand-gray text-lg leading-relaxed font-light">{displayDesc}</p>
                   </div>
-                  <h3 className="text-4xl font-black text-brand-dark mb-5 tracking-tight uppercase">{fuel.type}</h3>
-                  <div className={`flex items-baseline mb-8 ${isRtl ? 'flex-row-reverse space-x-reverse' : ''}`}>
-                    <span className="text-6xl font-black text-brand-main tracking-tighter">{fuel.pricePerLiter}</span>
-                    <span className={`${isRtl ? 'mr-4' : 'ml-4'} text-brand-gray font-black uppercase tracking-widest text-[11px] opacity-40 whitespace-nowrap`}>
-                      {t('prices.perLiter')}
-                    </span>
-                  </div>
-                  <p className="text-brand-gray text-lg leading-relaxed font-light">{fuel.description}</p>
-                </div>
-              </motion.div>
-            ))}
+                </motion.div>
+              );
+            })}
           </div>
         </div>
       </section>
@@ -185,8 +190,8 @@ const HomePage: React.FC = () => {
                 <div className={`grid grid-cols-1 sm:grid-cols-2 gap-12 mb-16 ${isRtl ? 'text-right' : 'text-left'}`}>
                   <div className="space-y-3">
                     <h5 className="font-black text-[10px] uppercase tracking-[0.4em] text-brand-main">{t('home.location.label')}</h5>
-                    <p className="text-brand-dark font-black text-xl uppercase tracking-tighter">{OWNER_INFO.address.split(',')[0]}</p>
-                    <p className="text-brand-gray text-base font-medium">{OWNER_INFO.location}</p>
+                    <p className="text-brand-dark font-black text-xl uppercase tracking-tighter" dir="ltr">{t('home.location.address').split(',')[0]}</p>
+                    <p className="text-brand-gray text-base font-medium">{t('home.location.dist')}</p>
                   </div>
                   <div className="space-y-3">
                     <h5 className="font-black text-[10px] uppercase tracking-[0.4em] text-brand-main">{t('home.location.schedule')}</h5>
