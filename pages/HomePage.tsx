@@ -21,6 +21,13 @@ const HomePage: React.FC = () => {
   const { scrollY } = useScroll();
   const y1 = useTransform(scrollY, [0, 500], [0, 200]);
 
+  const scrollToSection = (id: string) => {
+    const element = document.getElementById(id);
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
+
   return (
     <div className="overflow-x-hidden">
       {/* Hero Section */}
@@ -48,15 +55,15 @@ const HomePage: React.FC = () => {
               {OWNER_INFO.address} — {OWNER_INFO.location}
             </p>
             <div className="flex flex-col sm:flex-row gap-8 justify-center">
-              <motion.a 
-                href="#prices"
+              <motion.button 
+                onClick={() => scrollToSection('calculator')}
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
-                className="px-12 py-6 bg-brand-main text-white font-black rounded-3xl shadow-[0_25px_50px_-15px_rgba(131,174,55,0.6)] flex items-center justify-center space-x-4 uppercase tracking-[0.2em] text-[13px]"
+                className="px-12 py-6 bg-brand-main text-white font-black rounded-3xl shadow-[0_25px_50px_-15px_rgba(131,174,55,0.6)] flex items-center justify-center space-x-4 uppercase tracking-[0.2em] text-[13px] cursor-pointer"
               >
                 <span>Live Rates</span>
                 <ArrowRight className="h-5 w-5" />
-              </motion.a>
+              </motion.button>
               <Link 
                 to="/services" 
                 className="px-12 py-6 glass-dark text-white font-black rounded-3xl border border-white/10 hover:bg-white/20 transition-all flex items-center justify-center uppercase tracking-[0.2em] text-[13px]"
@@ -117,7 +124,7 @@ const HomePage: React.FC = () => {
       </section>
 
       {/* Smart Tool Section */}
-      <section className="py-40 bg-brand-dark relative overflow-hidden">
+      <section id="calculator" className="py-40 bg-brand-dark relative overflow-hidden">
         <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')] opacity-10" />
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-32 items-center">
