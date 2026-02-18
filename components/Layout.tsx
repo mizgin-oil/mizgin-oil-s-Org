@@ -32,29 +32,29 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) =>
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <nav 
-            className={`transition-all duration-500 rounded-full px-8 flex justify-between items-center ${
+            className={`transition-all duration-500 rounded-full px-4 sm:px-8 flex justify-between items-center ${
               scrolled ? 'glass shadow-2xl border border-white/20' : 'bg-transparent'
             }`}
           >
             <Link to="/" className="flex items-center group py-2">
-              <div className="flex items-center space-x-3">
+              <div className="flex items-center space-x-2 sm:space-x-3">
                 <img 
                   src={BRAND_LOGO_URL} 
                   alt="MIZGIN OIL" 
-                  className={`h-12 w-auto transition-all duration-500 object-contain ${
+                  className={`h-10 sm:h-12 w-auto transition-all duration-500 object-contain ${
                     scrolled ? 'scale-90 brightness-100' : 'scale-100 brightness-0 invert'
                   } ${location.pathname !== '/' && !scrolled ? 'brightness-100' : ''}`}
                 />
-                <div className="hidden sm:flex flex-col -space-y-1">
-                  <span className={`text-xl font-black tracking-tighter transition-colors duration-500 ${
+                <div className="flex flex-col -space-y-1">
+                  <span className={`text-lg sm:text-xl font-black tracking-tighter transition-colors duration-500 ${
                     scrolled || location.pathname !== '/' ? 'text-brand-dark' : 'text-white'
                   }`}>
                     MIZGIN<span className="text-brand-main">OIL</span>
                   </span>
-                  <span className={`text-[8px] font-black uppercase tracking-[0.4em] opacity-40 transition-colors duration-500 ${
+                  <span className={`text-[7px] sm:text-[8px] font-black uppercase tracking-[0.3em] sm:tracking-[0.4em] opacity-40 transition-colors duration-500 ${
                     scrolled || location.pathname !== '/' ? 'text-brand-dark' : 'text-white'
                   }`}>
-                    Duhok · Iraq
+                    Duhok
                   </span>
                 </div>
               </div>

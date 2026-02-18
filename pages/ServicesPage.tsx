@@ -3,7 +3,7 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { useAdmin } from '../contexts/AdminContext';
-import { Coffee, Droplets, ShoppingBag, Settings as Tool, ArrowRight } from 'lucide-react';
+import { Coffee, Droplets, ShoppingBag, Settings as Tool, LayoutGrid } from 'lucide-react';
 
 const iconMap: Record<string, React.ReactNode> = {
   'Droplets': <Droplets className="h-10 w-10" />,
@@ -13,7 +13,7 @@ const iconMap: Record<string, React.ReactNode> = {
 };
 
 const ServicesPage: React.FC = () => {
-  const { services, coffeeMenu } = useAdmin();
+  const { services, coffeeMenu, customSections } = useAdmin();
 
   return (
     <div className="bg-brand-light min-h-screen">
@@ -41,7 +41,7 @@ const ServicesPage: React.FC = () => {
         </div>
       </section>
 
-      {/* Services Grid */}
+      {/* Main Services Grid */}
       <section className="py-32">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 gap-24">
@@ -65,17 +65,16 @@ const ServicesPage: React.FC = () => {
                       alt={service.name} 
                       className="w-full aspect-[4/3] object-cover"
                     />
-                    <div className="absolute inset-0 bg-brand-dark/20 group-hover:bg-brand-dark/0 transition-all duration-700" />
                   </div>
                 </div>
                 
                 <div className="lg:w-1/2 space-y-8">
                   <div className="inline-flex items-center justify-center w-20 h-20 bg-brand-main/10 rounded-3xl text-brand-main border border-brand-main/20">
-                    {iconMap[service.icon]}
+                    {iconMap[service.icon] || <LayoutGrid className="h-10 w-10" />}
                   </div>
                   <div className="flex items-baseline space-x-6">
                     <h3 className="text-5xl font-black text-brand-dark uppercase tracking-tighter">{service.name}</h3>
-                    {service.id === 'car-wash' && (
+                    {service.price !== undefined && service.price > 0 && (
                       <span className="text-2xl font-black text-brand-main uppercase tracking-widest">{service.price} <span className="text-[10px] text-brand-gray/40">IQD</span></span>
                     )}
                   </div>
@@ -89,7 +88,7 @@ const ServicesPage: React.FC = () => {
                       <div className="space-y-4">
                         {coffeeMenu.map(coffee => (
                           <div key={coffee.id} className="flex justify-between items-center border-b border-brand-light pb-2">
-                            <span className="font-bold text-brand-dark">{coffee.name}</span>
+                            <span className="font-bold text-brand-dark uppercase tracking-tighter">{coffee.name}</span>
                             <span className="font-black text-brand-main text-sm">{coffee.price} IQD</span>
                           </div>
                         ))}
@@ -109,6 +108,34 @@ const ServicesPage: React.FC = () => {
               </motion.div>
             ))}
           </div>
+
+          {/* Dynamic Custom Sections */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12 mt-32">
+            {customSections.map((section, idx) => (
+              <motion.div 
+                key={section.id}
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ delay: idx * 0.1 }}
+                viewport={{ once: true }}
+                className="bg-white p-10 rounded-[3rem] shadow-xl border border-brand-light flex flex-col h-full"
+              >
+                <div className="w-16 h-16 bg-brand-main/10 rounded-2xl flex items-center justify-center mb-8 text-brand-main">
+                  <LayoutGrid className="h-8 w-8" />
+                </div>
+                <h4 className="text-3xl font-black uppercase tracking-tighter text-brand-dark mb-8">{section.title}</h4>
+                <div className="space-y-4 flex-grow">
+                  {section.items.map(item => (
+                    <div key={item.id} className="flex justify-between items-center border-b border-brand-light pb-3">
+                      <span className="font-bold text-brand-gray uppercase text-sm tracking-tight">{item.name}</span>
+                      <span className="font-black text-brand-main text-sm">{item.price} <span className="text-[10px] opacity-40">IQD</span></span>
+                    </div>
+                  ))}
+                  {section.items.length === 0 && <p className="text-brand-gray/30 text-xs font-bold uppercase tracking-widest italic py-4">Menu under development</p>}
+                </div>
+              </motion.div>
+            ))}
+          </div>
         </div>
       </section>
 
@@ -116,11 +143,7 @@ const ServicesPage: React.FC = () => {
       <section className="py-32 bg-brand-main text-white relative overflow-hidden">
         <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/natural-paper.png')] opacity-20" />
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
-          <motion.div
-            initial={{ opacity: 0, scale: 0.9 }}
-            whileInView={{ opacity: 1, scale: 1 }}
-            viewport={{ once: true }}
-          >
+          <motion.div initial={{ opacity: 0, scale: 0.9 }} whileInView={{ opacity: 1, scale: 1 }} viewport={{ once: true }}>
             <h2 className="text-5xl md:text-7xl font-black mb-10 uppercase tracking-tighter leading-none">
               Quality That <br /> Travels With You.
             </h2>

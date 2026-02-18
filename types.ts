@@ -17,6 +17,18 @@ export interface CoffeeItem {
   price: number;
 }
 
+export interface CustomItem {
+  id: string;
+  name: string;
+  price: number;
+}
+
+export interface CustomSection {
+  id: string;
+  title: string;
+  items: CustomItem[];
+}
+
 export interface Service {
   id: string;
   name: string;

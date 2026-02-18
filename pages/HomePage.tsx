@@ -1,9 +1,11 @@
+
 import React from 'react';
 import { motion, useScroll, useTransform } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { useAdmin } from '../contexts/AdminContext';
 import { FuelCalculator } from '../components/FuelCalculator';
 import { Zap, ShieldCheck, Star, Fuel, ArrowRight, ArrowUpRight } from 'lucide-react';
+import { OWNER_INFO } from '../constants';
 
 const HomePage: React.FC = () => {
   const { fuelPrices } = useAdmin();
@@ -37,8 +39,8 @@ const HomePage: React.FC = () => {
               Mizgin <br />
               <span className="text-brand-main italic drop-shadow-[0_0_40px_rgba(131,174,55,0.4)]">Oil.</span>
             </h1>
-            <p className="text-xl md:text-3xl text-white/80 max-w-3xl mx-auto mb-16 font-light leading-relaxed">
-              Experience the pinnacle of fuel quality and customer service at Duhok's most prestigious energy stop.
+            <p className="text-xl md:text-3xl text-white/90 max-w-4xl mx-auto mb-16 font-medium leading-relaxed tracking-tight">
+              {OWNER_INFO.address} — {OWNER_INFO.location}
             </p>
             <div className="flex flex-col sm:flex-row gap-8 justify-center">
               <motion.a 
@@ -199,8 +201,8 @@ const HomePage: React.FC = () => {
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-12 mb-16">
                     <div className="space-y-3">
                       <h5 className="font-black text-[10px] uppercase tracking-[0.4em] text-brand-main">Location</h5>
-                      <p className="text-brand-dark font-black text-xl uppercase tracking-tighter">Zakho Way, Duhok</p>
-                      <p className="text-brand-gray text-base font-medium">Near Tanahi District</p>
+                      <p className="text-brand-dark font-black text-xl uppercase tracking-tighter">{OWNER_INFO.address.split(',')[0]}</p>
+                      <p className="text-brand-gray text-base font-medium">{OWNER_INFO.location}</p>
                     </div>
                     <div className="space-y-3">
                       <h5 className="font-black text-[10px] uppercase tracking-[0.4em] text-brand-main">Schedule</h5>
