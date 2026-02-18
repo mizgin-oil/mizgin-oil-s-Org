@@ -1,6 +1,6 @@
 
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { FuelPrice, Service, CoffeeItem, FuelType, CustomSection, CustomItem } from '../types';
+import { FuelPrice, Service, CoffeeItem, CustomSection, CustomItem } from '../types';
 import { FUEL_PRICES as INITIAL_FUEL_PRICES, SERVICES as INITIAL_SERVICES, OWNER_INFO as INITIAL_OWNER_INFO } from '../constants';
 import { supabase } from '../supabase';
 
@@ -13,262 +13,181 @@ interface AdminContextType {
   updateFuelPrice: (type: string, newPrice: number) => Promise<void>;
   addFuelPrice: (type: string, price: number, description: string) => Promise<void>;
   removeFuelPrice: (type: string) => Promise<void>;
-  updateServicePrice: (id: string, newPrice: number) => void;
-  addService: (name: string, price: number, description: string) => void;
-  removeService: (id: string) => void;
-  updateCoffeePrice: (id: string, newPrice: number) => void;
-  addCoffeeItem: (name: string, price: number) => void;
-  removeCoffeeItem: (id: string) => void;
-  addCustomSection: (title: string) => void;
-  removeCustomSection: (id: string) => void;
-  addItemToCustomSection: (sectionId: string, name: string, price: number) => void;
-  removeItemFromCustomSection: (sectionId: string, itemId: string) => void;
-  updateItemInCustomSectionPrice: (sectionId: string, itemId: string, newPrice: number) => void;
-  updatePhone: (newPhone: string) => void;
+  updateServicePrice: (id: string, newPrice: number) => Promise<void>;
+  addService: (name: string, price: number, description: string) => Promise<void>;
+  removeService: (id: string) => Promise<void>;
+  updateCoffeePrice: (id: string, newPrice: number) => Promise<void>;
+  addCoffeeItem: (name: string, price: number) => Promise<void>;
+  removeCoffeeItem: (id: string) => Promise<void>;
+  addCustomSection: (title: string) => Promise<void>;
+  removeCustomSection: (id: string) => Promise<void>;
+  addItemToCustomSection: (sectionId: string, name: string, price: number) => Promise<void>;
+  removeItemFromCustomSection: (sectionId: string, itemId: string) => Promise<void>;
+  updateItemInCustomSectionPrice: (sectionId: string, itemId: string, newPrice: number) => Promise<void>;
+  updatePhone: (newPhone: string) => Promise<void>;
 }
-
-const INITIAL_COFFEE_MENU: CoffeeItem[] = [
-  { id: 'espresso', name: 'Espresso', price: 1500 },
-  { id: 'latte', name: 'Caffè Latte', price: 3000 },
-  { id: 'cappuccino', name: 'Cappuccino', price: 3000 },
-  { id: 'americano', name: 'Americano', price: 2500 },
-];
 
 const AdminContext = createContext<AdminContextType | undefined>(undefined);
 
 export const AdminProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [fuelPrices, setFuelPrices] = useState<FuelPrice[]>(INITIAL_FUEL_PRICES);
+  const [services, setServices] = useState<Service[]>(INITIAL_SERVICES);
+  const [coffeeMenu, setCoffeeMenu] = useState<CoffeeItem[]>([]);
+  const [customSections, setCustomSections] = useState<CustomSection[]>([]);
+  const [contactPhone, setContactPhone] = useState(INITIAL_OWNER_INFO.phone);
 
-  const [services, setServices] = useState<Service[]>(() => {
-    const saved = localStorage.getItem('mizgin_services');
-    if (saved) return JSON.parse(saved);
-    return INITIAL_SERVICES.map(s => ({ 
-      ...s, 
-      price: s.id === 'car-wash' ? 5000 : 0 
-    }));
-  });
+  const fetchAllData = async () => {
+    try {
+      // 1. Fuel Prices
+      const { data: fuelData } = await supabase.from('Fuel Prices').select('*');
+      if (fuelData && fuelData.length > 0) {
+        setFuelPrices(fuelData.map(f => ({
+          type: f.type,
+          pricePerLiter: f.pricePerLiter,
+          description: f.description || 'Premium grade fuel.'
+        })));
+      }
 
-  const [coffeeMenu, setCoffeeMenu] = useState<CoffeeItem[]>(() => {
-    const saved = localStorage.getItem('mizgin_coffee_menu');
-    return saved ? JSON.parse(saved) : INITIAL_COFFEE_MENU;
-  });
+      // 2. Services
+      const { data: serviceData } = await supabase.from('services').select('*').order('name');
+      if (serviceData) {
+        // If the DB has services (even an empty array), we use those. 
+        // We only use INITIAL_SERVICES if the DB call fails or hasn't run.
+        setServices(serviceData);
+      }
 
-  const [customSections, setCustomSections] = useState<CustomSection[]>(() => {
-    const saved = localStorage.getItem('mizgin_custom_sections');
-    return saved ? JSON.parse(saved) : [];
-  });
+      // 3. Coffee Menu
+      const { data: coffeeData } = await supabase.from('coffee_menu').select('*').order('name');
+      if (coffeeData) setCoffeeMenu(coffeeData);
 
-  const [contactPhone, setContactPhone] = useState(() => {
-    const saved = localStorage.getItem('mizgin_phone');
-    return saved ? saved : INITIAL_OWNER_INFO.phone;
-  });
+      // 4. Custom Sections
+      const { data: sectionData } = await supabase.from('custom_sections').select('*');
+      const { data: itemData } = await supabase.from('custom_items').select('*');
+      
+      if (sectionData) {
+        setCustomSections(sectionData.map(s => ({
+          id: s.id,
+          title: s.title,
+          items: itemData ? itemData.filter(i => i.section_id === s.id) : []
+        })));
+      }
+
+      // 5. Settings
+      const { data: settingsData } = await supabase.from('settings').select('*').eq('key', 'contact_phone').single();
+      if (settingsData) setContactPhone(settingsData.value);
+
+    } catch (err) {
+      console.warn('Supabase fetch issue:', err);
+    }
+  };
 
   useEffect(() => {
-    const fetchFuelPrices = async () => {
-      try {
-        const { data, error } = await supabase
-          .from('Fuel Prices')
-          .select('*');
-
-        if (error) throw error;
-
-        if (data && data.length > 0) {
-          const mappedData: FuelPrice[] = data.map((item: any) => ({
-            type: item.type as FuelType,
-            pricePerLiter: item.pricePerLiter,
-            description: INITIAL_FUEL_PRICES.find(f => f.type === item.type)?.description || 'Premium grade fuel.'
-          }));
-          setFuelPrices(mappedData);
-        }
-      } catch (err) {
-        console.warn('Supabase initial fetch failed, using constants.', err);
-      }
-    };
-
-    fetchFuelPrices();
-
-    const channel = supabase
-      .channel('fuel-price-changes')
-      .on(
-        'postgres_changes',
-        { event: '*', schema: 'public', table: 'Fuel Prices' },
-        () => fetchFuelPrices()
-      )
-      .subscribe();
+    fetchAllData();
+    const fuelChannel = supabase.channel('f_rt').on('postgres_changes', { event: '*', schema: 'public', table: 'Fuel Prices' }, fetchAllData).subscribe();
+    const svcChannel = supabase.channel('s_rt').on('postgres_changes', { event: '*', schema: 'public', table: 'services' }, fetchAllData).subscribe();
+    const cofChannel = supabase.channel('c_rt').on('postgres_changes', { event: '*', schema: 'public', table: 'coffee_menu' }, fetchAllData).subscribe();
+    const secChannel = supabase.channel('x_rt').on('postgres_changes', { event: '*', schema: 'public', table: 'custom_sections' }, fetchAllData).on('postgres_changes', { event: '*', schema: 'public', table: 'custom_items' }, fetchAllData).subscribe();
 
     return () => {
-      supabase.removeChannel(channel);
+      supabase.removeChannel(fuelChannel);
+      supabase.removeChannel(svcChannel);
+      supabase.removeChannel(cofChannel);
+      supabase.removeChannel(secChannel);
     };
   }, []);
 
-  useEffect(() => {
-    localStorage.setItem('mizgin_services', JSON.stringify(services));
-  }, [services]);
-
-  useEffect(() => {
-    localStorage.setItem('mizgin_coffee_menu', JSON.stringify(coffeeMenu));
-  }, [coffeeMenu]);
-
-  useEffect(() => {
-    localStorage.setItem('mizgin_custom_sections', JSON.stringify(customSections));
-  }, [customSections]);
-
-  useEffect(() => {
-    localStorage.setItem('mizgin_phone', contactPhone);
-  }, [contactPhone]);
-
   const updateFuelPrice = async (type: string, newPrice: number) => {
-    try {
-      const { error } = await supabase
-        .from('Fuel Prices')
-        .update({ pricePerLiter: newPrice })
-        .eq('type', type);
-      if (error) throw error;
-    } catch (err) {
-      console.error('Failed to update fuel price:', err);
-      throw err;
-    }
+    await supabase.from('Fuel Prices').upsert({ type, pricePerLiter: newPrice });
+    await fetchAllData();
   };
 
   const addFuelPrice = async (type: string, price: number, description: string) => {
-    try {
-      const { error } = await supabase
-        .from('Fuel Prices')
-        .insert([{ type, pricePerLiter: price }]);
-      if (error) throw error;
-      setFuelPrices(prev => [...prev, { type: type as FuelType, pricePerLiter: price, description }]);
-    } catch (err) {
-      console.error('Failed to add fuel price:', err);
-      throw err;
-    }
+    await supabase.from('Fuel Prices').insert([{ type, pricePerLiter: price, description }]);
+    await fetchAllData();
   };
 
   const removeFuelPrice = async (type: string) => {
-    try {
-      const { error } = await supabase
-        .from('Fuel Prices')
-        .delete()
-        .eq('type', type);
-      if (error) throw error;
-      setFuelPrices(prev => prev.filter(f => f.type !== type));
-    } catch (err) {
-      console.error('Failed to remove fuel price:', err);
-      throw err;
-    }
+    await supabase.from('Fuel Prices').delete().eq('type', type);
+    await fetchAllData();
   };
 
-  const updateServicePrice = (id: string, newPrice: number) => {
-    setServices(prev => prev.map(s => s.id === id ? { ...s, price: newPrice } : s));
+  const updateServicePrice = async (id: string, newPrice: number) => {
+    await supabase.from('services').update({ price: newPrice }).eq('id', id);
+    await fetchAllData();
   };
 
-  const addService = (name: string, price: number, description: string) => {
-    const newService: Service = {
-      id: 'service-' + Date.now(),
-      name,
-      description,
+  const addService = async (name: string, price: number, description: string) => {
+    const { error } = await supabase.from('services').insert([{ 
+      id: 'svc-' + Date.now(), 
+      name, 
+      price, 
+      description, 
       icon: 'Tool',
-      image: 'https://images.unsplash.com/photo-1486006396193-471068589dca?auto=format&fit=crop&q=80&w=1200',
-      price
-    };
-    setServices(prev => [...prev, newService]);
+      image: 'https://images.unsplash.com/photo-1486006396193-471068589dca?auto=format&fit=crop&q=80&w=1200'
+    }]);
+    if (error) throw error;
+    await fetchAllData();
   };
 
-  const removeService = (id: string) => {
-    setServices(prev => prev.filter(s => s.id !== id));
+  const removeService = async (id: string) => {
+    await supabase.from('services').delete().eq('id', id);
+    await fetchAllData();
   };
 
-  const updateCoffeePrice = (id: string, newPrice: number) => {
-    setCoffeeMenu(prev => prev.map(c => c.id === id ? { ...c, price: newPrice } : c));
+  const updateCoffeePrice = async (id: string, newPrice: number) => {
+    await supabase.from('coffee_menu').update({ price: newPrice }).eq('id', id);
+    await fetchAllData();
   };
 
-  const addCoffeeItem = (name: string, price: number) => {
-    const newItem: CoffeeItem = {
-      id: 'coffee-' + Date.now(),
-      name,
-      price
-    };
-    setCoffeeMenu(prev => [...prev, newItem]);
+  const addCoffeeItem = async (name: string, price: number) => {
+    await supabase.from('coffee_menu').insert([{ id: 'cof-' + Date.now(), name, price }]);
+    await fetchAllData();
   };
 
-  const removeCoffeeItem = (id: string) => {
-    setCoffeeMenu(prev => prev.filter(c => c.id !== id));
+  const removeCoffeeItem = async (id: string) => {
+    await supabase.from('coffee_menu').delete().eq('id', id);
+    await fetchAllData();
   };
 
-  const addCustomSection = (title: string) => {
-    const newSection: CustomSection = {
-      id: 'section-' + Date.now(),
-      title,
-      items: []
-    };
-    setCustomSections(prev => [...prev, newSection]);
+  const addCustomSection = async (title: string) => {
+    await supabase.from('custom_sections').insert([{ id: 'sec-' + Date.now(), title }]);
+    await fetchAllData();
   };
 
-  const removeCustomSection = (id: string) => {
-    setCustomSections(prev => prev.filter(s => s.id !== id));
+  const removeCustomSection = async (id: string) => {
+    await supabase.from('custom_sections').delete().eq('id', id);
+    await fetchAllData();
   };
 
-  const addItemToCustomSection = (sectionId: string, name: string, price: number) => {
-    setCustomSections(prev => prev.map(s => {
-      if (s.id === sectionId) {
-        return {
-          ...s,
-          items: [...s.items, { id: 'item-' + Date.now(), name, price }]
-        };
-      }
-      return s;
-    }));
+  const addItemToCustomSection = async (sectionId: string, name: string, price: number) => {
+    await supabase.from('custom_items').insert([{ id: 'itm-' + Date.now(), section_id: sectionId, name, price }]);
+    await fetchAllData();
   };
 
-  const removeItemFromCustomSection = (sectionId: string, itemId: string) => {
-    setCustomSections(prev => prev.map(s => {
-      if (s.id === sectionId) {
-        return {
-          ...s,
-          items: s.items.filter(i => i.id !== itemId)
-        };
-      }
-      return s;
-    }));
+  const removeItemFromCustomSection = async (sectionId: string, itemId: string) => {
+    await supabase.from('custom_items').delete().eq('id', itemId);
+    await fetchAllData();
   };
 
-  const updateItemInCustomSectionPrice = (sectionId: string, itemId: string, newPrice: number) => {
-    setCustomSections(prev => prev.map(s => {
-      if (s.id === sectionId) {
-        return {
-          ...s,
-          items: s.items.map(i => i.id === itemId ? { ...i, price: newPrice } : i)
-        };
-      }
-      return s;
-    }));
+  const updateItemInCustomSectionPrice = async (sectionId: string, itemId: string, newPrice: number) => {
+    await supabase.from('custom_items').update({ price: newPrice }).eq('id', itemId);
+    await fetchAllData();
   };
 
-  const updatePhone = (newPhone: string) => {
+  const updatePhone = async (newPhone: string) => {
+    await supabase.from('settings').upsert({ key: 'contact_phone', value: newPhone });
     setContactPhone(newPhone);
+    await fetchAllData();
   };
 
   return (
     <AdminContext.Provider value={{ 
-      fuelPrices, 
-      services, 
-      coffeeMenu,
-      customSections,
-      contactPhone,
-      updateFuelPrice,
-      addFuelPrice,
-      removeFuelPrice,
-      updateServicePrice,
-      addService,
-      removeService,
-      updateCoffeePrice,
-      addCoffeeItem,
-      removeCoffeeItem,
-      addCustomSection,
-      removeCustomSection,
-      addItemToCustomSection,
-      removeItemFromCustomSection,
-      updateItemInCustomSectionPrice,
-      updatePhone
+      fuelPrices, services, coffeeMenu, customSections, contactPhone,
+      updateFuelPrice, addFuelPrice, removeFuelPrice,
+      updateServicePrice, addService, removeService,
+      updateCoffeePrice, addCoffeeItem, removeCoffeeItem,
+      addCustomSection, removeCustomSection, addItemToCustomSection,
+      removeItemFromCustomSection, updateItemInCustomSectionPrice, updatePhone
     }}>
       {children}
     </AdminContext.Provider>

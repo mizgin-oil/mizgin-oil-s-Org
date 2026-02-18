@@ -4,11 +4,24 @@ import { Link, useLocation } from 'react-router-dom';
 import { Menu, X, MapPin, Phone, Instagram, Facebook, Lock } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { OWNER_INFO, BRAND_LOGO_URL } from '../constants';
+import { useAdmin } from '../contexts/AdminContext';
+
+const TikTokIcon = ({ className }: { className?: string }) => (
+  <svg 
+    viewBox="0 0 24 24" 
+    fill="currentColor" 
+    className={className}
+    stroke="none"
+  >
+    <path d="M12.525.02c1.31-.02 2.61-.01 3.91-.02.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.17-2.89-.6-4.13-1.47V15.5c0 1.93-.43 3.91-1.74 5.33-1.32 1.45-3.37 2.18-5.32 2.12-1.95-.06-3.87-.87-5.04-2.43-1.18-1.57-1.55-3.69-1.07-5.59.49-1.91 1.97-3.57 3.84-4.18 1.1-.36 2.29-.38 3.42-.12v4.09c-.83-.24-1.74-.2-2.52.24-.78.44-1.35 1.25-1.47 2.13-.12.89.15 1.83.74 2.49.59.66 1.48.97 2.36.91.87-.06 1.7-.5 2.15-1.25.46-.75.61-1.65.59-2.52-.01-3.33-.01-6.66-.01-9.99.01-.13 0-.27.01-.4z" />
+  </svg>
+);
 
 export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const location = useLocation();
+  const { contactPhone } = useAdmin();
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 20);
@@ -22,37 +35,48 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) =>
     { path: '/about', label: 'Legacy' },
   ];
 
+  const socialLinks = {
+    tiktok: 'https://www.tiktok.com/@mizgin.oil',
+    facebook: 'https://www.facebook.com/share/187RnoDMRe/',
+    instagram: 'https://www.instagram.com/mizgin.oil.station'
+  };
+
+  // Logic to determine if text should be dark or light
+  // Admin page is light by default, others have dark top sections
+  const isDarkBgPage = location.pathname === '/' || location.pathname === '/services' || location.pathname === '/about';
+  const useDarkText = scrolled || (!isDarkBgPage);
+
   return (
     <div className="min-h-screen flex flex-col font-sans selection:bg-brand-main selection:text-white">
       {/* Header */}
       <header 
-        className={`fixed w-full z-40 transition-all duration-500 ${
+        className={`fixed w-full z-50 transition-all duration-500 ${
           scrolled ? 'py-4' : 'py-6'
         }`}
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <nav 
-            className={`transition-all duration-500 rounded-full px-4 sm:px-8 flex justify-between items-center ${
+            className={`transition-all duration-500 rounded-full px-4 sm:px-8 flex justify-between items-center h-16 sm:h-20 ${
               scrolled ? 'glass shadow-2xl border border-white/20' : 'bg-transparent'
             }`}
           >
-            <Link to="/" className="flex items-center group py-2">
+            <Link to="/" className="flex items-center group">
               <div className="flex items-center space-x-2 sm:space-x-3">
                 <img 
                   src={BRAND_LOGO_URL} 
                   alt="MIZGIN OIL" 
                   className={`h-10 sm:h-12 w-auto transition-all duration-500 object-contain ${
-                    scrolled ? 'scale-90 brightness-100' : 'scale-100 brightness-0 invert'
-                  } ${location.pathname !== '/' && !scrolled ? 'brightness-100' : ''}`}
+                    useDarkText ? 'brightness-100 invert-0' : 'brightness-0 invert'
+                  } ${scrolled ? 'scale-90' : 'scale-100'}`}
                 />
                 <div className="flex flex-col -space-y-1">
                   <span className={`text-lg sm:text-xl font-black tracking-tighter transition-colors duration-500 ${
-                    scrolled || location.pathname !== '/' ? 'text-brand-dark' : 'text-white'
+                    useDarkText ? 'text-brand-dark' : 'text-white'
                   }`}>
                     MIZGIN<span className="text-brand-main">OIL</span>
                   </span>
-                  <span className={`text-[7px] sm:text-[8px] font-black uppercase tracking-[0.3em] sm:tracking-[0.4em] opacity-40 transition-colors duration-500 ${
-                    scrolled || location.pathname !== '/' ? 'text-brand-dark' : 'text-white'
+                  <span className={`text-[7px] sm:text-[8px] font-black uppercase tracking-[0.3em] sm:tracking-[0.4em] transition-colors duration-500 ${
+                    useDarkText ? 'text-brand-dark opacity-40' : 'text-white opacity-60'
                   }`}>
                     Duhok
                   </span>
@@ -68,15 +92,15 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) =>
                   to={link.path}
                   className={`px-5 py-2 rounded-full text-sm font-bold transition-all duration-300 relative group overflow-hidden ${
                     location.pathname === link.path 
-                      ? (scrolled || location.pathname !== '/' ? 'text-brand-main' : 'text-white')
-                      : (scrolled || location.pathname !== '/' ? 'text-brand-gray hover:text-brand-dark' : 'text-white/70 hover:text-white')
+                      ? (useDarkText ? 'text-brand-main' : 'text-white')
+                      : (useDarkText ? 'text-brand-gray hover:text-brand-dark' : 'text-white/70 hover:text-white')
                   }`}
                 >
                   <span className="relative z-10">{link.label}</span>
                   {location.pathname === link.path && (
                     <motion.div 
                       layoutId="activeTab"
-                      className="absolute inset-0 bg-brand-main/10 rounded-full -z-0"
+                      className={`absolute inset-0 rounded-full -z-0 ${useDarkText ? 'bg-brand-main/10' : 'bg-white/10'}`}
                     />
                   )}
                 </Link>
@@ -93,7 +117,7 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) =>
             <button
               onClick={() => setIsMenuOpen(!isMenuOpen)}
               className={`md:hidden p-2 rounded-full transition-colors ${
-                scrolled || location.pathname !== '/' ? 'text-brand-dark hover:bg-brand-gray/10' : 'text-white hover:bg-white/10'
+                useDarkText ? 'text-brand-dark hover:bg-brand-gray/10' : 'text-white hover:bg-white/10'
               }`}
             >
               {isMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
@@ -169,18 +193,36 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) =>
 
             <div>
               <h4 className="text-[10px] font-black uppercase tracking-[0.3em] text-brand-main mb-8">Connect</h4>
-              <div className="flex space-x-5 mb-10">
-                <a href="#" className="w-14 h-14 rounded-2xl border border-white/10 flex items-center justify-center hover:bg-brand-main hover:border-brand-main transition-all duration-500">
-                  <Facebook className="h-6 w-6" />
+              <div className="flex space-x-4 mb-10">
+                <a 
+                  href={socialLinks.facebook} 
+                  target="_blank" 
+                  rel="noopener noreferrer" 
+                  className="w-12 h-12 rounded-xl border border-white/10 flex items-center justify-center hover:bg-brand-main hover:border-brand-main transition-all duration-500"
+                >
+                  <Facebook className="h-5 w-5" />
                 </a>
-                <a href="#" className="w-14 h-14 rounded-2xl border border-white/10 flex items-center justify-center hover:bg-brand-main hover:border-brand-main transition-all duration-500">
-                  <Instagram className="h-6 w-6" />
+                <a 
+                  href={socialLinks.instagram} 
+                  target="_blank" 
+                  rel="noopener noreferrer" 
+                  className="w-12 h-12 rounded-xl border border-white/10 flex items-center justify-center hover:bg-brand-main hover:border-brand-main transition-all duration-500"
+                >
+                  <Instagram className="h-5 w-5" />
+                </a>
+                <a 
+                  href={socialLinks.tiktok} 
+                  target="_blank" 
+                  rel="noopener noreferrer" 
+                  className="w-12 h-12 rounded-xl border border-white/10 flex items-center justify-center hover:bg-brand-main hover:border-brand-main transition-all duration-500"
+                >
+                  <TikTokIcon className="h-5 w-5" />
                 </a>
               </div>
               <div className="space-y-4">
                 <p className="text-brand-gray text-sm font-bold flex items-center">
                   <Phone className="h-4 w-4 mr-4 text-brand-main" />
-                  {OWNER_INFO.phone}
+                  {contactPhone}
                 </p>
                 <p className="text-brand-gray text-sm font-bold flex items-center">
                   <MapPin className="h-4 w-4 mr-4 text-brand-main" />

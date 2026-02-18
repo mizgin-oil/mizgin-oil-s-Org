@@ -3,17 +3,10 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { useAdmin } from '../contexts/AdminContext';
-import { Coffee, Droplets, ShoppingBag, Settings as Tool, LayoutGrid } from 'lucide-react';
-
-const iconMap: Record<string, React.ReactNode> = {
-  'Droplets': <Droplets className="h-10 w-10" />,
-  'Coffee': <Coffee className="h-10 w-10" />,
-  'ShoppingBag': <ShoppingBag className="h-10 w-10" />,
-  'Tool': <Tool className="h-10 w-10" />
-};
+import { LayoutGrid, Sparkles, Star } from 'lucide-react';
 
 const ServicesPage: React.FC = () => {
-  const { services, coffeeMenu, customSections } = useAdmin();
+  const { customSections } = useAdmin();
 
   return (
     <div className="bg-brand-light min-h-screen">
@@ -35,107 +28,68 @@ const ServicesPage: React.FC = () => {
               Elite <br /><span className="text-brand-main italic">Amenities.</span>
             </h1>
             <p className="text-xl text-brand-gray font-light max-w-2xl leading-relaxed">
-              We redefine the standard stop. Discover a curated suite of services designed for your vehicle's health and your personal comfort.
+              Tailored excellence for your vehicle and comfort. Discover our full range of manually curated premium services.
             </p>
           </motion.div>
         </div>
       </section>
 
-      {/* Main Services Grid */}
+      {/* Dynamic Content Grid */}
       <section className="py-32">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 gap-24">
-            {services.map((service, index) => (
-              <motion.div 
-                key={service.id}
-                initial={{ opacity: 0, y: 50 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, margin: "-100px" }}
-                transition={{ duration: 0.8, delay: index * 0.1 }}
-                className={`flex flex-col lg:flex-row items-center gap-16 ${
-                  index % 2 === 1 ? 'lg:flex-row-reverse' : ''
-                }`}
-              >
-                <div className="lg:w-1/2 group">
-                  <div className="relative rounded-[3rem] overflow-hidden shadow-3xl">
-                    <motion.img 
-                      whileHover={{ scale: 1.05 }}
-                      transition={{ duration: 1 }}
-                      src={service.image} 
-                      alt={service.name} 
-                      className="w-full aspect-[4/3] object-cover"
-                    />
+          {customSections.length === 0 ? (
+            <div className="text-center py-40 border-4 border-dashed border-brand-main/10 rounded-[4rem]">
+              <Sparkles className="h-20 w-20 text-brand-main/20 mx-auto mb-8" />
+              <h2 className="text-4xl font-black text-brand-dark uppercase tracking-tighter mb-4">Elite Hub Building...</h2>
+              <p className="text-brand-gray text-xl font-light">Our concierge team is preparing new manual sections. Check back soon.</p>
+              <Link to="/admin" className="mt-10 inline-block text-brand-main font-black uppercase tracking-widest text-xs border-b-2 border-brand-main pb-1">Manage Dashboard</Link>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12">
+              {customSections.map((section, idx) => (
+                <motion.div 
+                  key={section.id}
+                  initial={{ opacity: 0, y: 30 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  transition={{ delay: idx * 0.1, duration: 0.6 }}
+                  viewport={{ once: true }}
+                  whileHover={{ y: -10 }}
+                  className="bg-white p-12 rounded-[4rem] shadow-[0_50px_100px_-25px_rgba(0,0,0,0.06)] border border-white hover:border-brand-main transition-all duration-500 flex flex-col h-full group"
+                >
+                  <div className="w-20 h-20 bg-brand-light rounded-[2rem] flex items-center justify-center mb-10 text-brand-main group-hover:bg-brand-main group-hover:text-white transition-all duration-500">
+                    <Star className="h-8 w-8" />
                   </div>
-                </div>
-                
-                <div className="lg:w-1/2 space-y-8">
-                  <div className="inline-flex items-center justify-center w-20 h-20 bg-brand-main/10 rounded-3xl text-brand-main border border-brand-main/20">
-                    {iconMap[service.icon] || <LayoutGrid className="h-10 w-10" />}
-                  </div>
-                  <div className="flex items-baseline space-x-6">
-                    <h3 className="text-5xl font-black text-brand-dark uppercase tracking-tighter">{service.name}</h3>
-                    {service.price !== undefined && service.price > 0 && (
-                      <span className="text-2xl font-black text-brand-main uppercase tracking-widest">{service.price} <span className="text-[10px] text-brand-gray/40">IQD</span></span>
+                  
+                  <h4 className="text-4xl font-black uppercase tracking-tighter text-brand-dark mb-10 group-hover:text-brand-main transition-colors">{section.title}</h4>
+                  
+                  <div className="space-y-6 flex-grow">
+                    {section.items.map(item => (
+                      <div key={item.id} className="flex justify-between items-end border-b border-brand-light pb-4 group/item">
+                        <div className="flex flex-col">
+                          <span className="font-black text-brand-gray uppercase text-sm tracking-tight group-hover/item:text-brand-dark transition-colors">{item.name}</span>
+                          <span className="text-[9px] font-bold text-brand-main uppercase tracking-widest opacity-0 group-hover/item:opacity-100 transition-opacity">Premium Grade</span>
+                        </div>
+                        <div className="text-right">
+                          <span className="font-black text-brand-main text-xl tracking-tighter">{item.price}</span>
+                          <span className="ml-2 text-[10px] font-black text-brand-gray/40 uppercase tracking-widest">IQD</span>
+                        </div>
+                      </div>
+                    ))}
+                    {section.items.length === 0 && (
+                      <p className="text-brand-gray/30 text-xs font-black uppercase tracking-widest italic py-4">Menu under review</p>
                     )}
                   </div>
-                  <p className="text-xl text-brand-gray leading-relaxed font-light">
-                    {service.description}
-                  </p>
-                  
-                  {service.id === 'coffee-shop' && (
-                    <div className="bg-white p-8 rounded-[2rem] shadow-xl border border-brand-light">
-                      <h4 className="text-xs font-black uppercase tracking-[0.3em] text-brand-main mb-6">Signature Brews</h4>
-                      <div className="space-y-4">
-                        {coffeeMenu.map(coffee => (
-                          <div key={coffee.id} className="flex justify-between items-center border-b border-brand-light pb-2">
-                            <span className="font-bold text-brand-dark uppercase tracking-tighter">{coffee.name}</span>
-                            <span className="font-black text-brand-main text-sm">{coffee.price} IQD</span>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  )}
 
-                  <ul className="space-y-4">
-                    {['Premium Quality Guaranteed', 'Professional Service Team', 'Available 24/7'].map((feat, i) => (
-                      <li key={i} className="flex items-center space-x-3 text-brand-dark font-bold text-sm uppercase tracking-widest">
-                        <div className="w-1.5 h-1.5 bg-brand-main rounded-full" />
-                        <span>{feat}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              </motion.div>
-            ))}
-          </div>
-
-          {/* Dynamic Custom Sections */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12 mt-32">
-            {customSections.map((section, idx) => (
-              <motion.div 
-                key={section.id}
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ delay: idx * 0.1 }}
-                viewport={{ once: true }}
-                className="bg-white p-10 rounded-[3rem] shadow-xl border border-brand-light flex flex-col h-full"
-              >
-                <div className="w-16 h-16 bg-brand-main/10 rounded-2xl flex items-center justify-center mb-8 text-brand-main">
-                  <LayoutGrid className="h-8 w-8" />
-                </div>
-                <h4 className="text-3xl font-black uppercase tracking-tighter text-brand-dark mb-8">{section.title}</h4>
-                <div className="space-y-4 flex-grow">
-                  {section.items.map(item => (
-                    <div key={item.id} className="flex justify-between items-center border-b border-brand-light pb-3">
-                      <span className="font-bold text-brand-gray uppercase text-sm tracking-tight">{item.name}</span>
-                      <span className="font-black text-brand-main text-sm">{item.price} <span className="text-[10px] opacity-40">IQD</span></span>
+                  <div className="mt-12 pt-8 border-t border-brand-light">
+                    <div className="flex items-center space-x-3 text-brand-dark font-black uppercase tracking-[0.2em] text-[9px]">
+                      <div className="w-1.5 h-1.5 bg-brand-main rounded-full" />
+                      <span>Certified Quality</span>
                     </div>
-                  ))}
-                  {section.items.length === 0 && <p className="text-brand-gray/30 text-xs font-bold uppercase tracking-widest italic py-4">Menu under development</p>}
-                </div>
-              </motion.div>
-            ))}
-          </div>
+                  </div>
+                </motion.div>
+              ))}
+            </div>
+          )}
         </div>
       </section>
 
@@ -148,7 +102,7 @@ const ServicesPage: React.FC = () => {
               Quality That <br /> Travels With You.
             </h2>
             <p className="text-2xl font-light mb-12 opacity-80 max-w-2xl mx-auto">
-              Each service is a testament to our dedication to excellence. We don't just fuel engines; we fuel your journey.
+              Every manual addition to our service menu is vetted for absolute excellence. We don't just fuel engines; we fuel your journey.
             </p>
             <Link to="/" className="inline-block px-12 py-5 bg-white text-brand-main font-black rounded-2xl hover:bg-brand-dark hover:text-white transition-all duration-300 shadow-2xl uppercase tracking-widest text-sm">
               Discover MIZGIN OIL

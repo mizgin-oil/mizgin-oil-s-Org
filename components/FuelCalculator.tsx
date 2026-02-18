@@ -7,7 +7,8 @@ import { Calculator as CalcIcon, RefreshCw } from 'lucide-react';
 
 export const FuelCalculator: React.FC = () => {
   const { fuelPrices } = useAdmin();
-  const [selectedFuel, setSelectedFuel] = useState<FuelType>(FuelType.NORMAL);
+  // Using string type for state ensures compatibility with dynamic fuel types fetched from the database
+  const [selectedFuel, setSelectedFuel] = useState<string>(FuelType.NORMAL);
   const [amountIqd, setAmountIqd] = useState<string>('');
   const [liters, setLiters] = useState<string>('');
   const [activeInput, setActiveInput] = useState<'iqd' | 'liters'>('iqd');

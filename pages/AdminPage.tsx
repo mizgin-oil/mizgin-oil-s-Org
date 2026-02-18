@@ -2,24 +2,16 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAdmin } from '../contexts/AdminContext';
-import { Lock, LogOut, Save, Fuel, Coffee, Droplets, Phone, CheckCircle, AlertCircle, Plus, Trash2, X, LayoutGrid } from 'lucide-react';
+import { Lock, LogOut, Fuel, Phone, CheckCircle, Plus, Trash2, X, LayoutGrid, Loader2 } from 'lucide-react';
 
 const AdminPage: React.FC = () => {
   const { 
     fuelPrices, 
-    services, 
-    coffeeMenu,
     customSections,
     contactPhone, 
     updateFuelPrice, 
     addFuelPrice,
     removeFuelPrice,
-    updateServicePrice, 
-    addService,
-    removeService,
-    updateCoffeePrice, 
-    addCoffeeItem,
-    removeCoffeeItem,
     addCustomSection,
     removeCustomSection,
     addItemToCustomSection,
@@ -33,19 +25,12 @@ const AdminPage: React.FC = () => {
   const [password, setPassword] = useState('');
   const [loginError, setLoginError] = useState('');
   const [successMsg, setSuccessMsg] = useState('');
+  const [isProcessing, setIsProcessing] = useState(false);
   
   // Creation States
   const [showAddFuel, setShowAddFuel] = useState(false);
   const [newFuelType, setNewFuelType] = useState('');
   const [newFuelPrice, setNewFuelPrice] = useState('');
-
-  const [showAddService, setShowAddService] = useState(false);
-  const [newServiceName, setNewServiceName] = useState('');
-  const [newServicePrice, setNewServicePrice] = useState('');
-
-  const [showAddCoffee, setShowAddCoffee] = useState(false);
-  const [newCoffeeName, setNewCoffeeName] = useState('');
-  const [newCoffeePrice, setNewCoffeePrice] = useState('');
 
   const [showAddSection, setShowAddSection] = useState(false);
   const [newSectionTitle, setNewSectionTitle] = useState('');
@@ -72,54 +57,56 @@ const AdminPage: React.FC = () => {
   const handleAddFuel = async (e: React.FormEvent) => {
     e.preventDefault();
     if (newFuelType && newFuelPrice) {
-      await addFuelPrice(newFuelType, parseInt(newFuelPrice), 'Custom fuel grade.');
-      notify(`Added ${newFuelType}`);
-      setNewFuelType('');
-      setNewFuelPrice('');
-      setShowAddFuel(false);
+      try {
+        setIsProcessing(true);
+        await addFuelPrice(newFuelType, parseInt(newFuelPrice), 'Premium fuel grade.');
+        notify(`Added ${newFuelType}`);
+        setNewFuelType('');
+        setNewFuelPrice('');
+        setShowAddFuel(false);
+      } catch (err) {
+        console.error(err);
+        alert('Failed to add fuel.');
+      } finally {
+        setIsProcessing(false);
+      }
     }
   };
 
-  const handleAddService = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (newServiceName && newServicePrice) {
-      addService(newServiceName, parseInt(newServicePrice), 'Premium service offered at Mizgin Oil.');
-      notify(`Added ${newServiceName}`);
-      setNewServiceName('');
-      setNewServicePrice('');
-      setShowAddService(false);
-    }
-  };
-
-  const handleAddCoffee = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (newCoffeeName && newCoffeePrice) {
-      addCoffeeItem(newCoffeeName, parseInt(newCoffeePrice));
-      notify(`Added ${newCoffeeName}`);
-      setNewCoffeeName('');
-      setNewCoffeePrice('');
-      setShowAddCoffee(false);
-    }
-  };
-
-  const handleAddSection = (e: React.FormEvent) => {
+  const handleAddSection = async (e: React.FormEvent) => {
     e.preventDefault();
     if (newSectionTitle) {
-      addCustomSection(newSectionTitle);
-      notify(`Section "${newSectionTitle}" Created`);
-      setNewSectionTitle('');
-      setShowAddSection(false);
+      try {
+        setIsProcessing(true);
+        await addCustomSection(newSectionTitle);
+        notify(`Section "${newSectionTitle}" Created`);
+        setNewSectionTitle('');
+        setShowAddSection(false);
+      } catch (err) {
+        console.error(err);
+        alert('Failed to create category.');
+      } finally {
+        setIsProcessing(false);
+      }
     }
   };
 
-  const handleAddItemToSection = (e: React.FormEvent) => {
+  const handleAddItemToSection = async (e: React.FormEvent) => {
     e.preventDefault();
     if (newItemSectionId && newItemName && newItemPrice) {
-      addItemToCustomSection(newItemSectionId, newItemName, parseInt(newItemPrice));
-      notify(`Added ${newItemName}`);
-      setNewItemName('');
-      setNewItemPrice('');
-      setNewItemSectionId(null);
+      try {
+        setIsProcessing(true);
+        await addItemToCustomSection(newItemSectionId, newItemName, parseInt(newItemPrice));
+        notify(`Added ${newItemName}`);
+        setNewItemName('');
+        setNewItemPrice('');
+        setNewItemSectionId(null);
+      } catch (err) {
+        console.error(err);
+        alert('Failed to add item to section.');
+      } finally {
+        setIsProcessing(false);
+      }
     }
   };
 
@@ -173,7 +160,10 @@ const AdminPage: React.FC = () => {
     <div className="bg-brand-light min-h-screen pt-32 pb-20">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center mb-12">
-          <h1 className="text-4xl font-black text-brand-dark uppercase">Control <span className="text-brand-main">Panel</span></h1>
+          <div className="flex items-center space-x-4">
+            <h1 className="text-4xl font-black text-brand-dark uppercase">Control <span className="text-brand-main">Panel</span></h1>
+            {isProcessing && <Loader2 className="h-5 w-5 text-brand-main animate-spin" />}
+          </div>
           <button onClick={() => setIsAuthenticated(false)} className="flex items-center space-x-3 px-6 py-3 bg-white text-brand-dark font-bold rounded-2xl hover:text-red-600 transition-all border border-transparent shadow-sm">
             <LogOut className="h-4 w-4" />
             <span>Logout</span>
@@ -188,7 +178,7 @@ const AdminPage: React.FC = () => {
         )}
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          {/* Fuel Rates */}
+          {/* Fuel Rates - Always Core */}
           <div className="bg-white rounded-[2.5rem] p-8 shadow-3xl">
             <div className="flex items-center justify-between mb-8">
               <div className="flex items-center space-x-4">
@@ -206,7 +196,9 @@ const AdminPage: React.FC = () => {
                     <input type="text" value={newFuelType} onChange={e => setNewFuelType(e.target.value)} placeholder="Fuel Name" className="bg-brand-light p-3 rounded-xl w-full font-bold" required />
                     <input type="number" value={newFuelPrice} onChange={e => setNewFuelPrice(e.target.value)} placeholder="Price IQD" className="bg-brand-light p-3 rounded-xl w-full font-bold" required />
                   </div>
-                  <button type="submit" className="w-full bg-brand-main text-white py-3 rounded-xl font-black uppercase text-xs">Add Fuel</button>
+                  <button type="submit" disabled={isProcessing} className="w-full bg-brand-main text-white py-3 rounded-xl font-black uppercase text-xs disabled:opacity-50">
+                    {isProcessing ? 'Saving...' : 'Add Fuel'}
+                  </button>
                 </motion.form>
               )}
             </AnimatePresence>
@@ -214,7 +206,7 @@ const AdminPage: React.FC = () => {
               {fuelPrices.map(f => (
                 <div key={f.type} className="flex justify-between items-center group">
                   <div className="flex items-center space-x-2">
-                    <button onClick={() => removeFuelPrice(f.type)} className="p-2 text-red-300 opacity-0 group-hover:opacity-100"><Trash2 className="h-4 w-4" /></button>
+                    <button onClick={() => { if(confirm(`Delete ${f.type}?`)) removeFuelPrice(f.type) }} className="p-2 text-red-300 opacity-0 group-hover:opacity-100 transition-opacity"><Trash2 className="h-4 w-4" /></button>
                     <span className="font-bold uppercase text-sm text-brand-gray">{f.type}</span>
                   </div>
                   <input type="number" defaultValue={f.pricePerLiter} onBlur={e => updateFuelPrice(f.type, parseInt(e.target.value))} className="bg-brand-light p-2 rounded-lg w-24 text-right font-black" />
@@ -223,77 +215,7 @@ const AdminPage: React.FC = () => {
             </div>
           </div>
 
-          {/* Service Rates */}
-          <div className="bg-white rounded-[2.5rem] p-8 shadow-3xl">
-            <div className="flex items-center justify-between mb-8">
-              <div className="flex items-center space-x-4">
-                <Droplets className="h-6 w-6 text-brand-main" />
-                <h2 className="text-xl font-black text-brand-dark uppercase">Service Rates</h2>
-              </div>
-              <button onClick={() => setShowAddService(!showAddService)} className="p-3 bg-brand-main/10 rounded-xl text-brand-main">
-                {showAddService ? <X className="h-5 w-5" /> : <Plus className="h-5 w-5" />}
-              </button>
-            </div>
-            <AnimatePresence>
-              {showAddService && (
-                <motion.form initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }} onSubmit={handleAddService} className="mb-6 space-y-4 overflow-hidden">
-                  <div className="grid grid-cols-2 gap-4">
-                    <input type="text" value={newServiceName} onChange={e => setNewServiceName(e.target.value)} placeholder="Service Name" className="bg-brand-light p-3 rounded-xl w-full font-bold" required />
-                    <input type="number" value={newServicePrice} onChange={e => setNewServicePrice(e.target.value)} placeholder="Price IQD" className="bg-brand-light p-3 rounded-xl w-full font-bold" required />
-                  </div>
-                  <button type="submit" className="w-full bg-brand-main text-white py-3 rounded-xl font-black uppercase text-xs">Add Service</button>
-                </motion.form>
-              )}
-            </AnimatePresence>
-            <div className="space-y-4">
-              {services.map(s => (
-                <div key={s.id} className="flex justify-between items-center group">
-                  <div className="flex items-center space-x-2">
-                    <button onClick={() => removeService(s.id)} className="p-2 text-red-300 opacity-0 group-hover:opacity-100"><Trash2 className="h-4 w-4" /></button>
-                    <span className="font-bold uppercase text-sm text-brand-gray">{s.name}</span>
-                  </div>
-                  <input type="number" defaultValue={s.price || 0} onBlur={e => updateServicePrice(s.id, parseInt(e.target.value))} className="bg-brand-light p-2 rounded-lg w-24 text-right font-black" />
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* Coffee Menu */}
-          <div className="bg-white rounded-[2.5rem] p-8 shadow-3xl">
-            <div className="flex items-center justify-between mb-8">
-              <div className="flex items-center space-x-4">
-                <Coffee className="h-6 w-6 text-brand-main" />
-                <h2 className="text-xl font-black text-brand-dark uppercase">Coffee Menu</h2>
-              </div>
-              <button onClick={() => setShowAddCoffee(!showAddCoffee)} className="p-3 bg-brand-main/10 rounded-xl text-brand-main">
-                {showAddCoffee ? <X className="h-5 w-5" /> : <Plus className="h-5 w-5" />}
-              </button>
-            </div>
-            <AnimatePresence>
-              {showAddCoffee && (
-                <motion.form initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }} onSubmit={handleAddCoffee} className="mb-6 space-y-4 overflow-hidden">
-                  <div className="grid grid-cols-2 gap-4">
-                    <input type="text" value={newCoffeeName} onChange={e => setNewCoffeeName(e.target.value)} placeholder="Drink Name" className="bg-brand-light p-3 rounded-xl w-full font-bold" required />
-                    <input type="number" value={newCoffeePrice} onChange={e => setNewCoffeePrice(e.target.value)} placeholder="Price IQD" className="bg-brand-light p-3 rounded-xl w-full font-bold" required />
-                  </div>
-                  <button type="submit" className="w-full bg-brand-main text-white py-3 rounded-xl font-black uppercase text-xs">Add Drink</button>
-                </motion.form>
-              )}
-            </AnimatePresence>
-            <div className="space-y-4">
-              {coffeeMenu.map(c => (
-                <div key={c.id} className="flex justify-between items-center group">
-                  <div className="flex items-center space-x-2">
-                    <button onClick={() => removeCoffeeItem(c.id)} className="p-2 text-red-300 opacity-0 group-hover:opacity-100"><Trash2 className="h-4 w-4" /></button>
-                    <span className="font-bold uppercase text-sm text-brand-gray">{c.name}</span>
-                  </div>
-                  <input type="number" defaultValue={c.price} onBlur={e => updateCoffeePrice(c.id, parseInt(e.target.value))} className="bg-brand-light p-2 rounded-lg w-24 text-right font-black" />
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* Create New Custom Section */}
+          {/* Add New Custom Category */}
           <div className="bg-brand-main text-white rounded-[2.5rem] p-8 shadow-3xl">
             <div className="flex items-center justify-between mb-8">
               <div className="flex items-center space-x-4">
@@ -307,17 +229,17 @@ const AdminPage: React.FC = () => {
             <AnimatePresence>
               {showAddSection && (
                 <motion.form initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }} onSubmit={handleAddSection} className="space-y-4 overflow-hidden">
-                  <input type="text" value={newSectionTitle} onChange={e => setNewSectionTitle(e.target.value)} placeholder="e.g. Lube Center" className="bg-white/10 p-4 rounded-xl w-full font-black text-white placeholder-white/50 border border-white/20 outline-none" required />
-                  <button type="submit" className="w-full bg-white text-brand-main py-4 rounded-xl font-black uppercase text-xs shadow-lg">Create Category</button>
+                  <input type="text" value={newSectionTitle} onChange={e => setNewSectionTitle(e.target.value)} placeholder="e.g. Car Wash, Market, Café" className="bg-white/10 p-4 rounded-xl w-full font-black text-white placeholder-white/50 border border-white/20 outline-none" required />
+                  <button type="submit" disabled={isProcessing} className="w-full bg-white text-brand-main py-4 rounded-xl font-black uppercase text-xs shadow-lg disabled:opacity-50">
+                    {isProcessing ? 'Creating...' : 'Create Category'}
+                  </button>
                 </motion.form>
               )}
             </AnimatePresence>
-            {!showAddSection && (
-              <p className="text-white/60 text-xs font-bold uppercase tracking-widest text-center mt-4">Create sections like Market, Mart, or Auto Parts</p>
-            )}
+            <p className="mt-4 text-[10px] uppercase font-black opacity-60 tracking-widest leading-relaxed">Create manual categories for services, markets, or cafes here.</p>
           </div>
 
-          {/* Render Custom Sections Management */}
+          {/* Custom Sections Management */}
           {customSections.map(section => (
             <div key={section.id} className="bg-white rounded-[2.5rem] p-8 shadow-3xl border-t-4 border-brand-main">
               <div className="flex items-center justify-between mb-8">
@@ -329,7 +251,7 @@ const AdminPage: React.FC = () => {
                   <button onClick={() => setNewItemSectionId(newItemSectionId === section.id ? null : section.id)} className="p-3 bg-brand-main/10 rounded-xl text-brand-main">
                     {newItemSectionId === section.id ? <X className="h-5 w-5" /> : <Plus className="h-5 w-5" />}
                   </button>
-                  <button onClick={() => { if(confirm('Delete section?')) removeCustomSection(section.id) }} className="p-3 bg-red-50 rounded-xl text-red-500 hover:bg-red-500 hover:text-white transition-colors">
+                  <button onClick={() => { if(confirm(`Delete category "${section.title}"?`)) removeCustomSection(section.id) }} className="p-3 bg-red-50 rounded-xl text-red-500 hover:bg-red-500 hover:text-white transition-colors">
                     <Trash2 className="h-5 w-5" />
                   </button>
                 </div>
@@ -342,22 +264,24 @@ const AdminPage: React.FC = () => {
                       <input type="text" value={newItemName} onChange={e => setNewItemName(e.target.value)} placeholder="Item Name" className="bg-brand-light p-3 rounded-xl w-full font-bold" required />
                       <input type="number" value={newItemPrice} onChange={e => setNewItemPrice(e.target.value)} placeholder="Price IQD" className="bg-brand-light p-3 rounded-xl w-full font-bold" required />
                     </div>
-                    <button type="submit" className="w-full bg-brand-main text-white py-3 rounded-xl font-black uppercase text-xs">Add Item</button>
+                    <button type="submit" disabled={isProcessing} className="w-full bg-brand-main text-white py-3 rounded-xl font-black uppercase text-xs disabled:opacity-50">
+                      {isProcessing ? 'Adding...' : 'Add Item'}
+                    </button>
                   </motion.form>
                 )}
               </AnimatePresence>
 
               <div className="space-y-4">
-                {section.items.length === 0 && <p className="text-center text-brand-gray/30 text-[10px] uppercase font-bold py-4">No items added yet</p>}
                 {section.items.map(item => (
                   <div key={item.id} className="flex justify-between items-center group">
                     <div className="flex items-center space-x-2">
-                      <button onClick={() => removeItemFromCustomSection(section.id, item.id)} className="p-2 text-red-300 opacity-0 group-hover:opacity-100"><Trash2 className="h-4 w-4" /></button>
+                      <button onClick={() => removeItemFromCustomSection(section.id, item.id)} className="p-2 text-red-300 opacity-0 group-hover:opacity-100 transition-opacity"><Trash2 className="h-4 w-4" /></button>
                       <span className="font-bold uppercase text-sm text-brand-gray">{item.name}</span>
                     </div>
                     <input type="number" defaultValue={item.price} onBlur={e => updateItemInCustomSectionPrice(section.id, item.id, parseInt(e.target.value))} className="bg-brand-light p-2 rounded-lg w-24 text-right font-black" />
                   </div>
                 ))}
+                {section.items.length === 0 && <p className="text-brand-gray/30 text-[10px] font-black uppercase tracking-widest text-center py-4">No items added yet</p>}
               </div>
             </div>
           ))}

@@ -1,4 +1,5 @@
 
+// Enum representing the predefined fuel grades available at the station
 export enum FuelType {
   NORMAL = 'Normal Kar',
   ENHANCED = 'Enhanced',
@@ -6,7 +7,7 @@ export enum FuelType {
 }
 
 export interface FuelPrice {
-  type: FuelType;
+  type: string;
   pricePerLiter: number;
   description: string;
 }
@@ -35,5 +36,5 @@ export interface Service {
   description: string;
   icon: string;
   image: string;
-  price?: number; // Added for editable service prices like Car Wash
+  price?: number;
 }
