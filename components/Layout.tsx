@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Menu, X, MapPin, Phone, Instagram, Facebook, Lock, Globe, ChevronDown } from 'lucide-react';
@@ -40,8 +39,8 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) =>
   ];
 
   const languages: { code: Language; label: string }[] = [
-    { code: 'en', label: 'English' },
     { code: 'ku-ba', label: 'Badînî' },
+    { code: 'en', label: 'English' },
     { code: 'ku-so', label: 'Soranî' },
     { code: 'ar', label: 'عربي' },
     { code: 'tr', label: 'Türkçe' },

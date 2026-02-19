@@ -1,4 +1,3 @@
-
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { Language } from '../types';
 import { translations } from '../translations';
@@ -15,7 +14,8 @@ const LanguageContext = createContext<LanguageContextType | undefined>(undefined
 export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [language, setLanguageState] = useState<Language>(() => {
     const saved = localStorage.getItem('mizgin_lang');
-    return (saved as Language) || 'en';
+    // Default to 'ku-ba' (Kurdish Badini) as requested
+    return (saved as Language) || 'ku-ba';
   });
 
   const setLanguage = (lang: Language) => {

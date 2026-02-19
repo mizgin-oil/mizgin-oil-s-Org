@@ -13,6 +13,7 @@ export const translations = {
       admin: 'Admin'
     },
     hero: {
+      welcome: 'Welcome to',
       title: 'Mizgin',
       sub: 'Oil.',
       rates: 'Live Rates',
@@ -137,6 +138,7 @@ export const translations = {
       admin: 'ئەدمین'
     },
     hero: {
+      welcome: 'ب خێر بێی بۆ',
       title: 'مزگین',
       sub: 'ئۆیل.',
       rates: 'نیرخێن نوو',
@@ -261,6 +263,7 @@ export const translations = {
       admin: 'ئەدمین'
     },
     hero: {
+      welcome: 'بەخێربێیت بۆ',
       title: 'مزگین',
       sub: 'ئۆیل.',
       rates: 'نرخەکان',
@@ -385,6 +388,7 @@ export const translations = {
       admin: 'المسؤول'
     },
     hero: {
+      welcome: 'أهلاً بكم في',
       title: 'مزكين',
       sub: 'أويل.',
       rates: 'الأسعار المباشرة',
@@ -509,6 +513,7 @@ export const translations = {
       admin: 'Yönetici'
     },
     hero: {
+      welcome: 'Hoş geldiniz',
       title: 'Mizgin',
       sub: 'Oil.',
       rates: 'Canlı Oranlar',
@@ -599,7 +604,7 @@ export const translations = {
       fuelRates: 'Yakıt Oranları',
       addFuel: 'Yakıt Ekle',
       addCategory: 'Yeni Kategori Ekle',
-      contactPhone: 'İletişim Telefonu',
+      contactPhone: 'İletیشم Telefonu',
       deleteConfirm: 'Bunu silmek istediğinizden emin misiniz?',
       saving: 'Kaydediliyor...',
       noItems: 'Henüz öğe eklenmedi',

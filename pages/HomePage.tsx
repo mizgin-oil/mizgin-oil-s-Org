@@ -1,174 +1,226 @@
 
-import React from 'react';
+import React, { useRef, useEffect, useState } from 'react';
 import { motion, useScroll, useTransform } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { useAdmin } from '../contexts/AdminContext';
 import { useLanguage } from '../contexts/LanguageContext';
 import { FuelCalculator } from '../components/FuelCalculator';
-import { Zap, ShieldCheck, Star, Fuel, ArrowRight, ArrowUpRight, Droplets, ArrowLeft } from 'lucide-react';
-
-const getFuelIcon = (type: string) => {
-  const t = type.toLowerCase();
-  if (t.includes('super')) return <Star className="h-12 w-12 text-brand-main transition-colors group-hover:text-white" />;
-  if (t.includes('enhanced')) return <ShieldCheck className="h-12 w-12 text-brand-main transition-colors group-hover:text-white" />;
-  if (t.includes('normal') || t.includes('kar')) return <Zap className="h-12 w-12 text-brand-main transition-colors group-hover:text-white" />;
-  if (t.includes('diesel')) return <Droplets className="h-12 w-12 text-brand-main transition-colors group-hover:text-white" />;
-  return <Fuel className="h-12 w-12 text-brand-main transition-colors group-hover:text-white" />;
-};
+import { Fuel, ArrowUpRight, Zap, Star } from 'lucide-react';
 
 const HomePage: React.FC = () => {
-  const { fuelPrices } = useAdmin();
+  const { fuelPrices, customSections } = useAdmin();
   const { t, isRtl } = useLanguage();
   const { scrollY } = useScroll();
   const y1 = useTransform(scrollY, [0, 500], [0, 200]);
+  
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
+  const [isHovered, setIsHovered] = useState(false);
 
-  const scrollToSection = (id: string) => {
-    const element = document.getElementById(id);
-    if (element) {
-      element.scrollIntoView({ behavior: 'smooth' });
-    }
-  };
+  // Triple the items to ensure smooth infinite loop for manual and auto scrolling
+  const tickerItems = [...fuelPrices, ...fuelPrices, ...fuelPrices, ...fuelPrices, ...fuelPrices, ...fuelPrices];
+
+  useEffect(() => {
+    const container = scrollContainerRef.current;
+    if (!container) return;
+
+    let animationId: number;
+    const speed = 0.8; // Pixels per frame
+
+    const scroll = () => {
+      if (!isHovered) {
+        if (isRtl) {
+          container.scrollLeft -= speed;
+          // Loop back if we reach the start
+          if (container.scrollLeft <= 0) {
+            container.scrollLeft = container.scrollWidth / 3;
+          }
+        } else {
+          container.scrollLeft += speed;
+          // Loop back if we reach the end of the first set
+          if (container.scrollLeft >= container.scrollWidth / 3) {
+            container.scrollLeft = 0;
+          }
+        }
+      }
+      animationId = requestAnimationFrame(scroll);
+    };
+
+    animationId = requestAnimationFrame(scroll);
+    return () => cancelAnimationFrame(animationId);
+  }, [isHovered, isRtl]);
 
   return (
-    <div className={`overflow-x-hidden ${isRtl ? 'rtl' : 'ltr'}`}>
+    <div className={`overflow-x-hidden bg-brand-dark ${isRtl ? 'rtl' : 'ltr'}`}>
       {/* Hero Section */}
-      <section className="relative min-h-screen flex items-center justify-center text-white overflow-hidden bg-brand-dark">
+      <section className="relative min-h-screen flex flex-col justify-between text-white overflow-hidden bg-brand-dark pt-32 md:pt-40 pb-24">
         <motion.div style={{ y: y1 }} className="absolute inset-0 z-0">
           <img 
             src="https://images.unsplash.com/photo-1545147986-a9d6f210df77?auto=format&fit=crop&q=80&w=2000" 
             alt="MIZGIN OIL Station" 
-            className="w-full h-full object-cover opacity-60 scale-110"
+            className="w-full h-full object-cover opacity-40 scale-105"
           />
-          <div className="absolute inset-0 bg-gradient-to-b from-brand-dark/20 via-brand-dark/60 to-brand-dark" />
+          <div className="absolute inset-0 bg-gradient-to-b from-brand-dark/30 via-brand-dark/80 to-brand-dark" />
         </motion.div>
         
-        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+        {/* Welcome Text & Service Squares */}
+        <div className={`relative z-10 max-w-7xl mx-auto px-6 sm:px-10 lg:px-16 w-full ${isRtl ? 'text-right' : 'text-left'}`}>
           <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.2 }}
+            initial={{ opacity: 0, x: isRtl ? 40 : -40 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.8, delay: 0.1 }}
+            className="max-w-4xl"
           >
-            <h1 className="text-7xl md:text-9xl font-black tracking-tighter mb-10 leading-[0.85] uppercase text-white">
-              {t('hero.title')} <br />
-              <span className="text-brand-main italic drop-shadow-[0_0_40px_rgba(131,174,55,0.4)]">{t('hero.sub')}</span>
-            </h1>
-            <p className="text-xl md:text-3xl text-white/90 max-w-4xl mx-auto mb-16 font-medium leading-relaxed tracking-tight">
-              {t('home.location.address')} — {t('home.location.dist')}
-            </p>
-            <div className={`flex flex-col sm:flex-row gap-8 justify-center items-center ${isRtl ? 'sm:flex-row-reverse' : ''}`}>
-              <motion.button 
-                onClick={() => scrollToSection('calculator')}
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                className="px-12 py-6 bg-brand-main text-white font-black rounded-3xl shadow-[0_25px_50px_-15px_rgba(131,174,55,0.6)] flex items-center justify-center space-x-4 uppercase tracking-[0.2em] text-[13px] cursor-pointer"
-              >
-                <span>{t('hero.rates')}</span>
-                {isRtl ? <ArrowLeft className="h-5 w-5 mr-4" /> : <ArrowRight className="h-5 w-5 ml-4" />}
-              </motion.button>
-              <Link 
-                to="/services" 
-                className="px-12 py-6 glass-dark text-white font-black rounded-3xl border border-white/10 hover:bg-white/20 transition-all flex items-center justify-center uppercase tracking-[0.2em] text-[13px]"
-              >
-                {t('hero.ourServices')}
-              </Link>
+            <div className={`flex flex-col ${isRtl ? 'items-end' : 'items-start'}`}>
+              <span className="text-xl md:text-2xl font-bold tracking-[0.2em] uppercase opacity-60 text-white mb-2">
+                {t('hero.welcome')}
+              </span>
+              <h1 className="text-5xl md:text-6xl lg:text-7xl font-black tracking-tight leading-tight uppercase text-white flex flex-wrap gap-x-4 mb-10">
+                <span>{t('hero.title')}</span>
+                <span className="text-brand-main italic drop-shadow-[0_0_30px_rgba(131,174,55,0.4)]">
+                  {t('hero.sub')}
+                </span>
+              </h1>
+
+              {/* Static Service Squares - Below Name, No Animation */}
+              {customSections.length > 0 && (
+                <div className={`flex flex-wrap gap-3 md:gap-4 mt-2 ${isRtl ? 'justify-end' : 'justify-start'}`}>
+                  {customSections.map((section) => (
+                    <Link
+                      key={section.id}
+                      to="/services"
+                      className="w-24 h-24 md:w-32 md:h-32 glass-dark border border-white/10 rounded-[2rem] flex flex-col items-center justify-center p-3 text-center hover:bg-brand-main/10 transition-all duration-300 group shadow-lg"
+                    >
+                      <span className="text-[7px] md:text-[8px] font-black uppercase tracking-[0.3em] text-brand-main mb-2 opacity-40 group-hover:opacity-100 transition-opacity">
+                        Service
+                      </span>
+                      <span className="text-[10px] md:text-[12px] font-black uppercase tracking-tighter text-white/90 group-hover:text-white leading-none">
+                        {section.title}
+                      </span>
+                    </Link>
+                  ))}
+                </div>
+              )}
             </div>
           </motion.div>
         </div>
-      </section>
 
-      {/* Price Cards Section */}
-      <section id="prices" className="py-40 relative bg-brand-light">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className={`flex flex-col md:flex-row justify-between items-end mb-24 gap-10 ${isRtl ? 'md:flex-row-reverse' : ''}`}>
+        {/* Manual + Auto Scroll Ticker - Smaller Perfect Square Boxes */}
+        <div className="relative z-10 w-full mt-auto mb-12">
+          <div className="max-w-screen-2xl mx-auto px-4 md:px-10">
             <motion.div 
-              initial={{ opacity: 0, x: isRtl ? 30 : -30 }} 
-              whileInView={{ opacity: 1, x: 0 }} 
-              viewport={{ once: true }}
-              className={isRtl ? 'text-right' : 'text-left'}
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.4 }}
+              className="glass-dark border border-white/5 rounded-[2.5rem] p-1.5 md:p-2 overflow-hidden shadow-[0_40px_100px_-15px_rgba(0,0,0,0.6)] relative"
+              onMouseEnter={() => setIsHovered(true)}
+              onMouseLeave={() => setIsHovered(false)}
+              onTouchStart={() => setIsHovered(true)}
+              onTouchEnd={() => setIsHovered(false)}
             >
-              <h2 className="text-6xl font-black text-brand-dark mb-6 tracking-tighter uppercase leading-none">
-                {t('prices.title').split(' ')[0]} <span className="text-brand-main">{t('prices.title').split(' ')[1]}</span>
-              </h2>
-              <p className="text-brand-gray text-lg font-bold max-w-md uppercase tracking-[0.2em] opacity-50">
-                {t('prices.subtitle')}
-              </p>
-            </motion.div>
-            <div className="h-px bg-brand-gray/10 flex-grow mx-10 hidden md:block mb-5" />
-            <span className="text-brand-main font-black text-xs uppercase tracking-[0.3em] bg-brand-main/5 px-8 py-3 rounded-full border border-brand-main/10 shadow-sm">
-              {t('prices.updated')}
-            </span>
-          </div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
-            {fuelPrices.map((fuel, i) => {
-              const fuelKey = fuel.type.toLowerCase().replace(/\s+/g, '_');
-              const displayName = t(`fuel.${fuelKey}.name`) || fuel.type;
-              const displayDesc = t(`fuel.${fuelKey}.desc`) || fuel.description;
+              {/* Fade masks for elegant transition */}
+              <div className="absolute inset-y-0 left-0 w-12 md:w-32 bg-gradient-to-r from-brand-dark/90 to-transparent z-20 pointer-events-none" />
+              <div className="absolute inset-y-0 right-0 w-12 md:w-32 bg-gradient-to-l from-brand-dark/90 to-transparent z-20 pointer-events-none" />
 
-              return (
-                <motion.div 
-                  key={fuel.type}
-                  initial={{ opacity: 0, y: 40 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  transition={{ delay: i * 0.1, duration: 0.6 }}
-                  viewport={{ once: true }}
-                  whileHover={{ y: -15 }}
-                  className="group relative p-12 bg-white rounded-[4rem] shadow-[0_50px_100px_-25px_rgba(0,0,0,0.06)] border border-white hover:border-brand-main transition-all duration-700 overflow-hidden"
-                >
-                  <div className="absolute top-0 right-0 -mr-10 -mt-10 w-40 h-40 bg-brand-main/5 rounded-full blur-3xl group-hover:bg-brand-main/15 transition-colors duration-700" />
-                  
-                  <div className={`relative z-10 ${isRtl ? 'text-right' : 'text-left'}`}>
-                    <div className={`bg-brand-light w-24 h-24 rounded-[2rem] flex items-center justify-center mb-12 group-hover:scale-110 group-hover:bg-brand-main group-hover:text-white transition-all duration-700 ${isRtl ? 'mr-0 ml-auto' : ''}`}>
-                      {getFuelIcon(fuel.type)}
+              <div 
+                ref={scrollContainerRef}
+                className="flex items-center overflow-x-auto no-scrollbar scroll-smooth"
+                style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+              >
+                {tickerItems.map((fuel, i) => {
+                  const fuelKey = fuel.type.toLowerCase().replace(/\s+/g, '_');
+                  const displayName = t(`fuel.${fuelKey}.name`) || fuel.type;
+
+                  return (
+                    <div 
+                      key={`${fuel.type}-${i}`}
+                      className="w-32 h-32 md:w-44 md:h-44 flex flex-col items-center justify-center border-r border-white/5 group hover:bg-white/[0.03] transition-colors p-4 shrink-0"
+                    >
+                      <p className="text-[8px] md:text-[10px] font-black uppercase tracking-[0.2em] text-white/30 mb-2 group-hover:text-brand-main transition-colors text-center leading-tight">
+                        {displayName}
+                      </p>
+                      <div className="flex flex-col items-center">
+                        <span className="text-xl md:text-4xl font-black tracking-tighter text-white">
+                          {fuel.pricePerLiter}
+                        </span>
+                        <span className="text-[8px] md:text-[9px] font-bold text-white/10 uppercase tracking-widest mt-0.5">
+                          IQD / L
+                        </span>
+                      </div>
                     </div>
-                    <h3 className="text-4xl font-black text-brand-dark mb-5 tracking-tight uppercase">{displayName}</h3>
-                    <div className={`flex items-baseline mb-8 ${isRtl ? 'flex-row-reverse space-x-reverse' : ''}`}>
-                      <span className="text-6xl font-black text-brand-main tracking-tighter">{fuel.pricePerLiter}</span>
-                      <span className={`${isRtl ? 'mr-4' : 'ml-4'} text-brand-gray font-black uppercase tracking-widest text-[11px] opacity-40 whitespace-nowrap`}>
-                        {t('prices.perLiter')}
-                      </span>
-                    </div>
-                    <p className="text-brand-gray text-lg leading-relaxed font-light">{displayDesc}</p>
-                  </div>
-                </motion.div>
-              );
-            })}
+                  );
+                })}
+              </div>
+            </motion.div>
           </div>
         </div>
       </section>
 
-      {/* Smart Tool Section */}
+      {/* Calculator Section */}
       <section id="calculator" className="py-40 bg-brand-dark relative overflow-hidden">
         <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')] opacity-10" />
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <div className={`grid grid-cols-1 lg:grid-cols-2 gap-32 items-center ${isRtl ? 'text-right' : 'text-left'}`}>
             <motion.div initial={{ opacity: 0, x: isRtl ? 50 : -50 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }}>
-              <span className="text-brand-main font-black uppercase tracking-[0.5em] text-[10px] mb-10 block">{t('home.planningSub')}</span>
+              <span className="text-brand-main font-black uppercase tracking-[0.5em] text-[10px] mb-10 block">{t('calc.subtitle')}</span>
               <h2 className="text-6xl md:text-7xl font-black text-white mb-12 leading-none uppercase tracking-tighter">
-                {t('home.planningTitle')} <br /><span className="text-brand-main italic">{t('home.planningItalic')}</span>
+                {t('calc.title')} <br /><span className="text-brand-main italic">Instant Tool.</span>
               </h2>
               
-              <div className="space-y-14 mb-16">
-                {[
-                  { title: t('home.features.gasoline.title'), desc: t('home.features.gasoline.desc'), icon: <Fuel className="text-brand-main h-7 w-7" /> },
-                  { title: t('home.features.kerosene.title'), desc: t('home.features.kerosene.desc'), icon: <Zap className="text-white h-7 w-7" /> },
-                  { title: t('home.features.lpg.title'), desc: t('home.features.lpg.desc'), icon: <Star className="text-brand-main h-7 w-7" /> }
-                ].map((item, idx) => (
-                  <motion.div key={idx} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} transition={{ delay: idx * 0.1 }} className={`flex gap-8 group ${isRtl ? 'flex-row-reverse' : ''}`}>
-                    <div className="flex-shrink-0 w-16 h-16 bg-white/5 rounded-2xl flex items-center justify-center border border-white/10 group-hover:bg-brand-main transition-all duration-500">{item.icon}</div>
-                    <div>
-                      <h4 className="font-black text-2xl text-white mb-3 uppercase tracking-wide leading-none">{item.title}</h4>
-                      <p className="text-brand-gray leading-relaxed text-lg font-light max-w-sm">{item.desc}</p>
-                    </div>
-                  </motion.div>
-                ))}
+              <div className="space-y-10 mb-16">
+                 <p className="text-xl text-brand-gray/60 font-light leading-relaxed max-w-md">
+                   Our smart precision tool allows you to calculate volume and cost based on our real-time refined market rates.
+                 </p>
+                 <div className="flex flex-wrap gap-4">
+                    {fuelPrices.map(f => (
+                      <div key={f.type} className="px-6 py-3 bg-white/5 border border-white/10 rounded-full text-[10px] font-black uppercase tracking-widest text-brand-gray/50 flex items-center gap-2">
+                        <div className="w-1.5 h-1.5 bg-brand-main rounded-full" />
+                        {f.type}: {f.pricePerLiter} IQD
+                      </div>
+                    ))}
+                 </div>
               </div>
             </motion.div>
 
             <motion.div initial={{ opacity: 0, scale: 0.95 }} whileInView={{ opacity: 1, scale: 1 }} viewport={{ once: true }} className="relative">
-              <div className="absolute -inset-16 bg-brand-main/20 blur-[120px] rounded-full pointer-events-none" />
+              <div className="absolute -inset-16 bg-brand-main/10 blur-[120px] rounded-full pointer-events-none" />
               <FuelCalculator />
             </motion.div>
+          </div>
+        </div>
+      </section>
+
+      {/* Features Stripe Section */}
+      <section id="planning" className="py-40 bg-brand-dark relative overflow-hidden">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+          <div className={`flex flex-col md:flex-row justify-between items-end mb-24 gap-8 ${isRtl ? 'md:flex-row-reverse' : ''}`}>
+            <motion.div initial={{ opacity: 0, x: isRtl ? 30 : -30 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }}>
+              <h2 className="text-5xl md:text-7xl font-black text-white uppercase tracking-tighter leading-none">
+                {t('home.planningTitle')} <span className="text-brand-main italic">{t('home.planningItalic')}</span>
+              </h2>
+            </motion.div>
+            <span className="text-brand-main font-black uppercase tracking-[0.4em] text-[10px] border border-brand-main/30 px-8 py-3 rounded-full">
+              {t('home.planningSub')}
+            </span>
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {[
+              { title: t('home.features.gasoline.title'), desc: t('home.features.gasoline.desc'), icon: <Fuel className="text-brand-main h-8 w-8" /> },
+              { title: t('home.features.kerosene.title'), desc: t('home.features.kerosene.desc'), icon: <Zap className="text-white h-8 w-8" /> },
+              { title: t('home.features.lpg.title'), desc: t('home.features.lpg.desc'), icon: <Star className="text-brand-main h-8 w-8" /> }
+            ].map((item, idx) => (
+              <motion.div 
+                key={idx} 
+                initial={{ opacity: 0, y: 20 }} 
+                whileInView={{ opacity: 1, y: 0 }} 
+                transition={{ delay: idx * 0.1 }}
+                className={`bg-white/5 p-12 rounded-[3rem] border border-white/10 hover:border-brand-main transition-all group ${isRtl ? 'text-right' : 'text-left'}`}
+              >
+                <div className={`w-20 h-20 bg-white/5 rounded-3xl flex items-center justify-center mb-10 group-hover:bg-brand-main transition-all ${isRtl ? 'mr-0 ml-auto' : ''}`}>{item.icon}</div>
+                <h4 className="font-black text-2xl text-white mb-4 uppercase tracking-tight">{item.title}</h4>
+                <p className="text-brand-gray/60 leading-relaxed text-lg font-light">{item.desc}</p>
+              </motion.div>
+            ))}
           </div>
         </div>
       </section>
