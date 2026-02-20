@@ -1,5 +1,5 @@
 
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import { FuelPrice, Service, CoffeeItem, CustomSection, CustomItem } from '../types';
 import { FUEL_PRICES as INITIAL_FUEL_PRICES, SERVICES as INITIAL_SERVICES, OWNER_INFO as INITIAL_OWNER_INFO } from '../constants';
 import { supabase } from '../supabase';
@@ -26,6 +26,7 @@ interface AdminContextType {
   removeItemFromCustomSection: (sectionId: string, itemId: string) => Promise<void>;
   updateItemInCustomSectionPrice: (sectionId: string, itemId: string, newPrice: number) => Promise<void>;
   updatePhone: (newPhone: string) => Promise<void>;
+  refreshData: () => Promise<void>;
 }
 
 const AdminContext = createContext<AdminContextType | undefined>(undefined);
@@ -37,36 +38,35 @@ export const AdminProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   const [customSections, setCustomSections] = useState<CustomSection[]>([]);
   const [contactPhone, setContactPhone] = useState(INITIAL_OWNER_INFO.phone);
 
-  const fetchAllData = async () => {
+  const fetchAllData = useCallback(async () => {
     try {
-      const { data: fuelData } = await supabase.from('Fuel Prices').select('*');
-      if (fuelData) {
-        // Merge DB data with Initial Prices to ensure core fuels always exist
-        const mergedFuels = [...INITIAL_FUEL_PRICES];
+      // 1. Fetch Fuels
+      const { data: fuelData, error: fErr } = await supabase.from('Fuel Prices').select('*');
+      if (!fErr && fuelData) {
+        const mergedFuels = [...INITIAL_FUEL_PRICES].map(f => ({...f}));
         fuelData.forEach(dbFuel => {
-          const index = mergedFuels.findIndex(m => m.type === dbFuel.type);
+          const index = mergedFuels.findIndex(m => m.type.trim().toLowerCase() === dbFuel.type.trim().toLowerCase());
+          const price = Number(dbFuel.pricePerLiter);
           if (index !== -1) {
-            mergedFuels[index] = {
-              ...mergedFuels[index],
-              pricePerLiter: dbFuel.pricePerLiter
-            };
+            mergedFuels[index].pricePerLiter = price;
           } else {
             mergedFuels.push({
               type: dbFuel.type,
-              pricePerLiter: dbFuel.pricePerLiter,
+              pricePerLiter: price,
               description: dbFuel.description || 'Premium grade fuel.'
             });
           }
         });
         setFuelPrices(mergedFuels);
+      } else if (fErr) {
+        console.error('Fuel fetch error:', fErr);
       }
 
+      // 2. Fetch Legacy Services
       const { data: serviceData } = await supabase.from('services').select('*').order('name');
-      if (serviceData) setServices(serviceData);
+      if (serviceData) setServices(serviceData.map(s => ({ ...s, price: s.price ? Number(s.price) : undefined })));
 
-      const { data: coffeeData } = await supabase.from('coffee_menu').select('*').order('name');
-      if (coffeeData) setCoffeeMenu(coffeeData);
-
+      // 3. Fetch Custom Sections & Items
       const { data: sectionData } = await supabase.from('custom_sections').select('*');
       const { data: itemData } = await supabase.from('custom_items').select('*');
       
@@ -74,24 +74,30 @@ export const AdminProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         setCustomSections(sectionData.map(s => ({
           id: s.id,
           title: s.title,
-          items: itemData ? itemData.filter(i => i.section_id === s.id) : []
+          items: itemData 
+            ? itemData
+                .filter(i => i.section_id === s.id)
+                .map(i => ({ ...i, price: Number(i.price) }))
+                .sort((a, b) => a.name.localeCompare(b.name))
+            : []
         })));
       }
 
+      // 4. Fetch Global Settings
       const { data: settingsData } = await supabase.from('settings').select('*').eq('key', 'contact_phone').single();
       if (settingsData) setContactPhone(settingsData.value);
+      
     } catch (err) {
-      console.warn('Supabase fetch issue:', err);
+      console.error('AdminContext fetch error:', err);
     }
-  };
+  }, []);
 
   const getAiTranslations = async (text: string) => {
     try {
       const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
-      // Single pass translation request
-      const finalResponse = await ai.models.generateContent({
+      const response = await ai.models.generateContent({
         model: "gemini-3-flash-preview",
-        contents: `Translate this text: "${text}" into English, Badini (Kurdish), Sorani (Kurdish), Arabic, and Turkish. Output a JSON object with keys: en, ku-ba, ku-so, ar, tr.`,
+        contents: `Translate the term "${text}" for a Gas Station & Services business into English, Badini (Kurdish), Sorani (Kurdish), Arabic, and Turkish. Output ONLY a JSON object with keys: en, ku-ba, ku-so, ar, tr.`,
         config: {
           responseMimeType: "application/json",
           responseSchema: {
@@ -107,51 +113,56 @@ export const AdminProvider: React.FC<{ children: React.ReactNode }> = ({ childre
           }
         }
       });
-      return finalResponse.text;
+      return response.text;
     } catch (error) {
-      console.error("Translation Error:", error);
+      console.error("Translation Engine Error:", error);
       return JSON.stringify({ en: text, 'ku-ba': text, 'ku-so': text, ar: text, tr: text });
     }
   };
 
   useEffect(() => {
     fetchAllData();
-    const fuelChannel = supabase.channel('f_rt').on('postgres_changes', { event: '*', schema: 'public', table: 'Fuel Prices' }, fetchAllData).subscribe();
-    const svcChannel = supabase.channel('s_rt').on('postgres_changes', { event: '*', schema: 'public', table: 'services' }, fetchAllData).subscribe();
-    const cofChannel = supabase.channel('c_rt').on('postgres_changes', { event: '*', schema: 'public', table: 'coffee_menu' }, fetchAllData).subscribe();
-    const secChannel = supabase.channel('x_rt').on('postgres_changes', { event: '*', schema: 'public', table: 'custom_sections' }, fetchAllData).on('postgres_changes', { event: '*', schema: 'public', table: 'custom_items' }, fetchAllData).subscribe();
+    
+    // Setup Realtime subscriptions
+    const channels = [
+      supabase.channel('fuels').on('postgres_changes', { event: '*', schema: 'public', table: 'Fuel Prices' }, fetchAllData).subscribe(),
+      supabase.channel('sections').on('postgres_changes', { event: '*', schema: 'public', table: 'custom_sections' }, fetchAllData).subscribe(),
+      supabase.channel('items').on('postgres_changes', { event: '*', schema: 'public', table: 'custom_items' }, fetchAllData).subscribe(),
+      supabase.channel('settings').on('postgres_changes', { event: '*', schema: 'public', table: 'settings' }, fetchAllData).subscribe()
+    ];
 
     return () => {
-      supabase.removeChannel(fuelChannel);
-      supabase.removeChannel(svcChannel);
-      supabase.removeChannel(cofChannel);
-      supabase.removeChannel(secChannel);
+      channels.forEach(c => supabase.removeChannel(c));
     };
-  }, []);
+  }, [fetchAllData]);
 
   const updateFuelPrice = async (type: string, newPrice: number) => {
-    await supabase.from('Fuel Prices').upsert({ type, pricePerLiter: newPrice });
+    const { error } = await supabase.from('Fuel Prices').upsert({ type, pricePerLiter: newPrice });
+    if (error) throw error;
     await fetchAllData();
   };
 
   const addFuelPrice = async (type: string, price: number, description: string) => {
-    await supabase.from('Fuel Prices').insert([{ type, pricePerLiter: price, description }]);
+    const { error } = await supabase.from('Fuel Prices').insert([{ type, pricePerLiter: price, description }]);
+    if (error) throw error;
     await fetchAllData();
   };
 
   const removeFuelPrice = async (type: string) => {
-    await supabase.from('Fuel Prices').delete().eq('type', type);
+    const { error } = await supabase.from('Fuel Prices').delete().eq('type', type);
+    if (error) throw error;
     await fetchAllData();
   };
 
   const updateServicePrice = async (id: string, newPrice: number) => {
-    await supabase.from('services').update({ price: newPrice }).eq('id', id);
+    const { error } = await supabase.from('services').update({ price: newPrice }).eq('id', id);
+    if (error) throw error;
     await fetchAllData();
   };
 
   const addService = async (name: string, price: number, description: string) => {
     const translations = await getAiTranslations(name);
-    await supabase.from('services').insert([{ 
+    const { error } = await supabase.from('services').insert([{ 
       id: 'svc-' + Date.now(), 
       name: translations, 
       price, 
@@ -159,59 +170,70 @@ export const AdminProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       icon: 'Tool',
       image: 'https://images.unsplash.com/photo-1486006396193-471068589dca?auto=format&fit=crop&q=80&w=1200'
     }]);
+    if (error) throw error;
     await fetchAllData();
   };
 
   const removeService = async (id: string) => {
-    await supabase.from('services').delete().eq('id', id);
+    const { error } = await supabase.from('services').delete().eq('id', id);
+    if (error) throw error;
     await fetchAllData();
   };
 
   const updateCoffeePrice = async (id: string, newPrice: number) => {
-    await supabase.from('coffee_menu').update({ price: newPrice }).eq('id', id);
+    const { error } = await supabase.from('coffee_menu').update({ price: newPrice }).eq('id', id);
+    if (error) throw error;
     await fetchAllData();
   };
 
   const addCoffeeItem = async (name: string, price: number) => {
     const translations = await getAiTranslations(name);
-    await supabase.from('coffee_menu').insert([{ id: 'cof-' + Date.now(), name: translations, price }]);
+    const { error } = await supabase.from('coffee_menu').insert([{ id: 'cof-' + Date.now(), name: translations, price }]);
+    if (error) throw error;
     await fetchAllData();
   };
 
   const removeCoffeeItem = async (id: string) => {
-    await supabase.from('coffee_menu').delete().eq('id', id);
+    const { error } = await supabase.from('coffee_menu').delete().eq('id', id);
+    if (error) throw error;
     await fetchAllData();
   };
 
   const addCustomSection = async (title: string) => {
     const translations = await getAiTranslations(title);
-    await supabase.from('custom_sections').insert([{ id: 'sec-' + Date.now(), title: translations }]);
+    const { error } = await supabase.from('custom_sections').insert([{ id: 'sec-' + Date.now(), title: translations }]);
+    if (error) throw error;
     await fetchAllData();
   };
 
   const removeCustomSection = async (id: string) => {
-    await supabase.from('custom_sections').delete().eq('id', id);
+    const { error } = await supabase.from('custom_sections').delete().eq('id', id);
+    if (error) throw error;
     await fetchAllData();
   };
 
   const addItemToCustomSection = async (sectionId: string, name: string, price: number) => {
     const translations = await getAiTranslations(name);
-    await supabase.from('custom_items').insert([{ id: 'itm-' + Date.now(), section_id: sectionId, name: translations, price }]);
+    const { error } = await supabase.from('custom_items').insert([{ id: 'itm-' + Date.now(), section_id: sectionId, name: translations, price }]);
+    if (error) throw error;
     await fetchAllData();
   };
 
   const removeItemFromCustomSection = async (sectionId: string, itemId: string) => {
-    await supabase.from('custom_items').delete().eq('id', itemId);
+    const { error } = await supabase.from('custom_items').delete().eq('id', itemId);
+    if (error) throw error;
     await fetchAllData();
   };
 
   const updateItemInCustomSectionPrice = async (sectionId: string, itemId: string, newPrice: number) => {
-    await supabase.from('custom_items').update({ price: newPrice }).eq('id', itemId);
+    const { error } = await supabase.from('custom_items').update({ price: newPrice }).eq('id', itemId);
+    if (error) throw error;
     await fetchAllData();
   };
 
   const updatePhone = async (newPhone: string) => {
-    await supabase.from('settings').upsert({ key: 'contact_phone', value: newPhone });
+    const { error } = await supabase.from('settings').upsert({ key: 'contact_phone', value: newPhone });
+    if (error) throw error;
     setContactPhone(newPhone);
     await fetchAllData();
   };
@@ -223,7 +245,8 @@ export const AdminProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       updateServicePrice, addService, removeService,
       updateCoffeePrice, addCoffeeItem, removeCoffeeItem,
       addCustomSection, removeCustomSection, addItemToCustomSection,
-      removeItemFromCustomSection, updateItemInCustomSectionPrice, updatePhone
+      removeItemFromCustomSection, updateItemInCustomSectionPrice, updatePhone,
+      refreshData: fetchAllData
     }}>
       {children}
     </AdminContext.Provider>

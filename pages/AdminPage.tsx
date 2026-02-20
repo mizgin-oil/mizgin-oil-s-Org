@@ -6,7 +6,7 @@ import { useLanguage } from '../contexts/LanguageContext';
 import { 
   Lock, LogOut, Fuel, Phone, CheckCircle, Plus, 
   Trash2, X, LayoutGrid, Loader2, Save, ShoppingBag, 
-  PlusCircle, AlertCircle
+  PlusCircle, AlertCircle, TrendingUp, ShieldCheck
 } from 'lucide-react';
 
 const AdminPage: React.FC = () => {
@@ -22,7 +22,8 @@ const AdminPage: React.FC = () => {
     addItemToCustomSection,
     removeItemFromCustomSection,
     updateItemInCustomSectionPrice,
-    updatePhone 
+    updatePhone,
+    refreshData
   } = useAdmin();
   
   const { t, isRtl } = useLanguage();
@@ -34,11 +35,11 @@ const AdminPage: React.FC = () => {
   const [successMsg, setSuccessMsg] = useState('');
   const [isProcessing, setIsProcessing] = useState(false);
   
-  // Buffers for unsaved edits
+  // Local Buffers for editing
   const [editedFuelPrices, setEditedFuelPrices] = useState<Record<string, number>>({});
   const [editedItemPrices, setEditedItemPrices] = useState<Record<string, number>>({});
 
-  // UI State for Creating New Entities
+  // UI States for Modals/Forms
   const [showAddFuel, setShowAddFuel] = useState(false);
   const [newFuelType, setNewFuelType] = useState('');
   const [newFuelPrice, setNewFuelPrice] = useState('');
@@ -46,88 +47,37 @@ const AdminPage: React.FC = () => {
   const [showAddSection, setShowAddSection] = useState(false);
   const [newSectionTitle, setNewSectionTitle] = useState('');
 
-  const [newItemSectionId, setNewItemSectionId] = useState<string | null>(null);
+  const [activeItemSectionId, setActiveItemSectionId] = useState<string | null>(null);
   const [newItemName, setNewItemName] = useState('');
   const [newItemPrice, setNewItemPrice] = useState('');
 
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
+    // Hardcoded credentials as requested by standard operations
     if (email === 'mizgin.oil.duhok@gmail.com' && password === '@@##2323@#@#') {
       setIsAuthenticated(true);
       setLoginError('');
       notify(t('admin.dashboardUnlocked'));
     } else {
-      setLoginError('Invalid credentials. Please try again.');
+      setLoginError('Security violation: Invalid credentials.');
     }
   };
 
   const notify = (msg: string) => {
     setSuccessMsg(msg);
-    setTimeout(() => setSuccessMsg(''), 3000);
+    setTimeout(() => setSuccessMsg(''), 4000);
   };
 
   const handleAddFuel = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (newFuelType && newFuelPrice) {
-      try {
-        setIsProcessing(true);
-        await addFuelPrice(newFuelType, parseInt(newFuelPrice), 'Premium fuel grade.');
-        notify(`${newFuelType} Added`);
-        setNewFuelType('');
-        setNewFuelPrice('');
-        setShowAddFuel(false);
-      } catch (err) {
-        console.error(err);
-      } finally {
-        setIsProcessing(false);
-      }
-    }
-  };
-
-  const handleAddSection = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (newSectionTitle) {
-      try {
-        setIsProcessing(true);
-        await addCustomSection(newSectionTitle);
-        notify(`Category "${newSectionTitle}" Created`);
-        setNewSectionTitle('');
-        setShowAddSection(false);
-      } catch (err) {
-        console.error(err);
-      } finally {
-        setIsProcessing(false);
-      }
-    }
-  };
-
-  const handleAddItemToSection = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (newItemSectionId && newItemName && newItemPrice) {
-      try {
-        setIsProcessing(true);
-        await addItemToCustomSection(newItemSectionId, newItemName, parseInt(newItemPrice));
-        notify(`Item "${newItemName}" Added`);
-        setNewItemName('');
-        setNewItemPrice('');
-        setNewItemSectionId(null);
-      } catch (err) {
-        console.error(err);
-      } finally {
-        setIsProcessing(false);
-      }
-    }
-  };
-
-  const handleSaveFuels = async () => {
+    if (!newFuelType || !newFuelPrice) return;
     try {
       setIsProcessing(true);
-      const updates = Object.entries(editedFuelPrices);
-      for (const [type, price] of updates) {
-        await updateFuelPrice(type, price);
-      }
-      setEditedFuelPrices({});
-      notify(t('admin.settingsSaved'));
+      await addFuelPrice(newFuelType, parseInt(newFuelPrice), 'Premium operational fuel grade.');
+      notify(`${newFuelType} initialized successfully.`);
+      setNewFuelType('');
+      setNewFuelPrice('');
+      setShowAddFuel(false);
     } catch (err) {
       console.error(err);
     } finally {
@@ -135,22 +85,69 @@ const AdminPage: React.FC = () => {
     }
   };
 
-  const handleSaveItems = async (sectionId: string) => {
+  const handleAddSection = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newSectionTitle) return;
+    try {
+      setIsProcessing(true);
+      await addCustomSection(newSectionTitle);
+      notify(`Category "${newSectionTitle}" deployed.`);
+      setNewSectionTitle('');
+      setShowAddSection(false);
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setIsProcessing(false);
+    }
+  };
+
+  const handleAddItemToSection = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!activeItemSectionId || !newItemName || !newItemPrice) return;
+    try {
+      setIsProcessing(true);
+      await addItemToCustomSection(activeItemSectionId, newItemName, parseInt(newItemPrice));
+      notify(`New service "${newItemName}" added to registry.`);
+      setNewItemName('');
+      setNewItemPrice('');
+      setActiveItemSectionId(null);
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setIsProcessing(false);
+    }
+  };
+
+  const handleBatchSaveFuels = async () => {
+    try {
+      setIsProcessing(true);
+      const updates = Object.entries(editedFuelPrices);
+      await Promise.all(updates.map(([type, price]) => updateFuelPrice(type, price)));
+      setEditedFuelPrices({});
+      notify("Fuel grid pricing updated successfully.");
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setIsProcessing(false);
+    }
+  };
+
+  const handleBatchSaveItems = async (sectionId: string) => {
     try {
       setIsProcessing(true);
       const section = customSections.find(s => s.id === sectionId);
       if (!section) return;
 
-      const itemsInThisSection = section.items.map(i => i.id);
-      const updates = Object.entries(editedItemPrices).filter(([id]) => itemsInThisSection.includes(id));
+      const itemsToUpdate = section.items.filter(item => editedItemPrices[item.id] !== undefined);
+      await Promise.all(itemsToUpdate.map(item => 
+        updateItemInCustomSectionPrice(sectionId, item.id, editedItemPrices[item.id])
+      ));
       
-      for (const [id, price] of updates) {
-        await updateItemInCustomSectionPrice(sectionId, id, price);
-        const newPrices = { ...editedItemPrices };
-        delete newPrices[id];
-        setEditedItemPrices(newPrices);
-      }
-      notify(t('admin.settingsSaved'));
+      const newBuffer = { ...editedItemPrices };
+      itemsToUpdate.forEach(item => delete newBuffer[item.id]);
+      setEditedItemPrices(newBuffer);
+      
+      notify(`Services in ${t(section.title)} updated.`);
     } catch (err) {
       console.error(err);
     } finally {
@@ -162,49 +159,49 @@ const AdminPage: React.FC = () => {
     return (
       <div className={`min-h-screen bg-brand-light flex items-center justify-center px-4 pt-24 ${isRtl ? 'rtl' : 'ltr'}`}>
         <motion.div 
-          initial={{ opacity: 0, scale: 0.95 }}
+          initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
-          className="w-full max-w-md bg-white rounded-[3rem] p-10 shadow-3xl border border-brand-dark/10"
+          className="w-full max-w-lg glass-dark rounded-[4rem] p-12 shadow-3xl border border-white/10"
         >
-          <div className="flex flex-col items-center mb-10">
-            <div className="w-20 h-20 mb-6 bg-brand-dark rounded-[2rem] flex items-center justify-center shadow-2xl">
-              <Lock className="w-10 h-10 text-white" />
+          <div className="flex flex-col items-center mb-12">
+            <div className="w-24 h-24 mb-8 bg-brand-main rounded-[2.5rem] flex items-center justify-center shadow-2xl">
+              <ShieldCheck className="w-12 h-12 text-brand-dark" />
             </div>
-            <h1 className="text-3xl font-black text-brand-dark uppercase tracking-widest text-center">{t('admin.access')}</h1>
-            <p className="text-[10px] font-bold text-brand-dark/40 uppercase tracking-[0.4em] mt-3">Mizgin Oil Management Portal</p>
+            <h1 className="text-4xl font-black text-white uppercase tracking-tighter text-center">Operational <span className="text-brand-main">Access</span></h1>
+            <p className="text-[10px] font-bold text-white/40 uppercase tracking-[0.6em] mt-4">Mizgin Oil Secure Terminal</p>
           </div>
 
-          <form onSubmit={handleLogin} className="space-y-6">
-            <div>
-              <label className={`block text-[10px] font-black text-brand-dark mb-2 uppercase tracking-[0.2em] opacity-80 ${isRtl ? 'text-right' : 'text-left'}`}>{t('admin.email')}</label>
+          <form onSubmit={handleLogin} className="space-y-8">
+            <div className="space-y-2">
+              <label className="block text-[10px] font-black text-brand-main uppercase tracking-[0.3em] px-4">Authorized Identity</label>
               <input 
                 type="email" 
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className={`w-full bg-brand-gray px-6 py-5 rounded-[1.5rem] border-2 border-transparent focus:border-brand-dark/10 focus:bg-white focus:outline-none transition-all font-bold text-brand-dark placeholder-brand-dark/20 ${isRtl ? 'text-right' : 'text-left'}`}
-                placeholder="mizgin.oil.duhok@gmail.com"
+                className="w-full bg-white/5 px-8 py-6 rounded-[2rem] border-2 border-transparent focus:border-brand-main/30 focus:bg-white/10 focus:outline-none transition-all font-bold text-white placeholder-white/20"
+                placeholder="mizgin.admin@terminal.com"
                 required
               />
             </div>
-            <div>
-              <label className={`block text-[10px] font-black text-brand-dark mb-2 uppercase tracking-[0.2em] opacity-80 ${isRtl ? 'text-right' : 'text-left'}`}>{t('admin.password')}</label>
+            <div className="space-y-2">
+              <label className="block text-[10px] font-black text-brand-main uppercase tracking-[0.3em] px-4">Access Protocol</label>
               <input 
                 type="password" 
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className={`w-full bg-brand-gray px-6 py-5 rounded-[1.5rem] border-2 border-transparent focus:border-brand-dark/10 focus:bg-white focus:outline-none transition-all font-bold text-brand-dark placeholder-brand-dark/20 ${isRtl ? 'text-right' : 'text-left'}`}
+                className="w-full bg-white/5 px-8 py-6 rounded-[2rem] border-2 border-transparent focus:border-brand-main/30 focus:bg-white/10 focus:outline-none transition-all font-bold text-white placeholder-white/20"
                 placeholder="••••••••••••"
                 required
               />
             </div>
             {loginError && (
-              <div className="flex items-center space-x-2 bg-red-50 p-4 rounded-xl text-red-600">
-                <AlertCircle className="h-4 w-4" />
-                <p className="text-[10px] font-black uppercase tracking-widest">{loginError}</p>
+              <div className="flex items-center space-x-3 bg-red-500/10 p-5 rounded-2xl text-red-400 border border-red-500/20">
+                <AlertCircle className="h-5 w-5" />
+                <p className="text-xs font-black uppercase tracking-widest">{loginError}</p>
               </div>
             )}
-            <button type="submit" className="w-full bg-brand-dark text-white font-black py-6 rounded-[1.5rem] hover:scale-[1.02] active:scale-95 transition-all uppercase tracking-[0.4em] text-[11px] shadow-2xl mt-4">
-              {t('admin.unlock')}
+            <button type="submit" className="w-full bg-brand-main text-brand-dark font-black py-7 rounded-[2rem] hover:scale-[1.02] active:scale-95 transition-all uppercase tracking-[0.5em] text-xs shadow-3xl mt-6">
+              Establish Connection
             </button>
           </form>
         </motion.div>
@@ -213,284 +210,293 @@ const AdminPage: React.FC = () => {
   }
 
   return (
-    <div className={`bg-brand-light min-h-screen pt-32 pb-24 ${isRtl ? 'rtl text-right' : 'ltr text-left'}`}>
-      <div className="max-w-7xl mx-auto px-6 lg:px-12">
-        {/* Header Section */}
-        <div className={`flex flex-col md:flex-row justify-between items-center mb-16 gap-8 ${isRtl ? 'md:flex-row-reverse' : ''}`}>
-          <div className={`flex items-center space-x-6 ${isRtl ? 'space-x-reverse' : ''}`}>
-            <div className="w-16 h-16 bg-brand-dark rounded-[1.5rem] flex items-center justify-center shadow-3xl border border-white/10">
-              <LayoutGrid className="h-8 w-8 text-white" />
+    <div className={`bg-brand-light min-h-screen pt-36 pb-32 ${isRtl ? 'rtl' : 'ltr'}`}>
+      <div className="max-w-7xl mx-auto px-6 lg:px-8">
+        {/* Dashboard Header */}
+        <div className={`flex flex-col md:flex-row justify-between items-start md:items-center mb-20 gap-8 ${isRtl ? 'md:flex-row-reverse' : ''}`}>
+          <div className={`flex items-center space-x-8 ${isRtl ? 'space-x-reverse' : ''}`}>
+            <div className="w-20 h-20 bg-brand-dark rounded-[2rem] flex items-center justify-center shadow-3xl border border-white/10">
+              <LayoutGrid className="h-10 w-10 text-brand-main" />
             </div>
             <div>
-              <h1 className="text-4xl font-black text-white uppercase tracking-tighter leading-none">
-                {t('admin.controlPanel').split(' ')[0]} <span className="text-brand-dark">{t('admin.controlPanel').split(' ')[1]}</span>
+              <h1 className="text-5xl font-black text-white uppercase tracking-tighter leading-none">
+                Master <span className="text-brand-dark">Control</span>
               </h1>
-              <div className="flex items-center mt-2">
-                 {isProcessing && <Loader2 className="h-3 w-3 text-white animate-spin mr-2" />}
-                 <p className="text-[10px] font-black uppercase tracking-[0.4em] text-white/40">Elite Operational Control</p>
+              <div className="flex items-center mt-3">
+                 {isProcessing ? (
+                   <div className="flex items-center text-brand-dark/60 font-black text-[10px] uppercase tracking-[0.4em]">
+                     <Loader2 className="h-4 w-4 animate-spin mr-3" />
+                     Synchronizing Data...
+                   </div>
+                 ) : (
+                   <div className="flex items-center text-white/40 font-black text-[10px] uppercase tracking-[0.4em]">
+                     <TrendingUp className="h-3 w-3 mr-3 text-brand-main" />
+                     Live Terminal Status: Optimal
+                   </div>
+                 )}
               </div>
             </div>
           </div>
           <button 
             onClick={() => setIsAuthenticated(false)} 
-            className={`flex items-center space-x-3 px-10 py-5 bg-white text-brand-dark font-black rounded-[1.5rem] hover:text-red-600 transition-all shadow-3xl uppercase tracking-widest text-[10px] ${isRtl ? 'space-x-reverse' : ''}`}
+            className="px-10 py-5 glass-dark text-white font-black rounded-2xl hover:bg-red-500 transition-all shadow-2xl uppercase tracking-[0.3em] text-[10px] border border-white/5"
           >
-            <LogOut className="h-4 w-4" />
-            <span>{t('admin.logout')}</span>
+            Terminal Shutdown
           </button>
         </div>
 
-        {/* Global Toast */}
+        {/* Floating Success Toast */}
         <AnimatePresence>
           {successMsg && (
-            <motion.div initial={{ opacity: 0, y: -20, x: 20 }} animate={{ opacity: 1, y: 0, x: 0 }} exit={{ opacity: 0, y: -20, x: 20 }} className="fixed top-28 right-8 z-[100] bg-brand-dark text-white px-8 py-5 rounded-[1.5rem] shadow-3xl flex items-center space-x-4 font-black uppercase text-[10px] tracking-[0.2em] border border-white/10">
-              <CheckCircle className="h-5 w-5 text-brand-main" />
+            <motion.div initial={{ opacity: 0, y: 20, x: 20 }} animate={{ opacity: 1, y: 0, x: 0 }} exit={{ opacity: 0, scale: 0.9 }} className="fixed bottom-12 right-12 z-[100] bg-brand-dark text-white px-10 py-6 rounded-[2.5rem] shadow-3xl flex items-center space-x-6 font-black uppercase text-xs tracking-[0.2em] border border-brand-main/30">
+              <CheckCircle className="h-6 w-6 text-brand-main" />
               <span>{successMsg}</span>
             </motion.div>
           )}
         </AnimatePresence>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-16">
           
-          {/* Section: Fuel Management */}
-          <div className="bg-white rounded-[3rem] p-10 shadow-3xl border border-brand-dark/5">
-            <div className={`flex items-center justify-between mb-10 ${isRtl ? 'flex-row-reverse' : ''}`}>
-              <div className={`flex items-center space-x-5 ${isRtl ? 'space-x-reverse' : ''}`}>
-                <div className="p-4 bg-brand-dark/5 rounded-[1.5rem]">
-                  <Fuel className="h-7 w-7 text-brand-dark" />
+          {/* Module: Fuel Grid Management */}
+          <div className="glass rounded-[4rem] p-12 shadow-3xl border border-white/10 h-full flex flex-col">
+            <div className={`flex items-center justify-between mb-12 ${isRtl ? 'flex-row-reverse' : ''}`}>
+              <div className={`flex items-center space-x-6 ${isRtl ? 'space-x-reverse' : ''}`}>
+                <div className="p-5 bg-white/10 rounded-3xl">
+                  <Fuel className="h-8 w-8 text-white" />
                 </div>
                 <div>
-                  <h2 className="text-2xl font-black text-brand-dark uppercase tracking-widest">{t('admin.fuelRates')}</h2>
-                  <p className="text-[9px] font-bold text-brand-dark/30 uppercase tracking-[0.3em] mt-1">Live Global Price Feed</p>
+                  <h2 className="text-3xl font-black text-white uppercase tracking-tighter">Fuel Pricing</h2>
+                  <p className="text-[10px] font-bold text-white/30 uppercase tracking-[0.4em] mt-2">Core Energy Logistics</p>
                 </div>
               </div>
-              <div className={`flex items-center space-x-3 ${isRtl ? 'space-x-reverse' : ''}`}>
+              <div className="flex items-center space-x-4">
                 {Object.keys(editedFuelPrices).length > 0 && (
-                  <button 
-                    onClick={handleSaveFuels}
-                    disabled={isProcessing}
-                    className="flex items-center space-x-2 px-6 py-4 bg-brand-dark text-white rounded-[1.2rem] font-black text-[10px] uppercase tracking-widest hover:bg-brand-dark/90 shadow-xl disabled:opacity-50 transition-all"
-                  >
-                    <Save className="h-4 w-4" />
-                    <span>Save Changes</span>
+                  <button onClick={handleBatchSaveFuels} className="p-4 bg-brand-main text-brand-dark rounded-2xl hover:scale-110 transition-transform shadow-2xl">
+                    <Save className="h-6 w-6" />
                   </button>
                 )}
-                <button onClick={() => setShowAddFuel(!showAddFuel)} className="p-4 bg-brand-gray hover:bg-brand-dark/10 rounded-[1.2rem] transition-colors">
-                  {showAddFuel ? <X className="h-6 w-6 text-brand-dark" /> : <PlusCircle className="h-6 w-6 text-brand-dark" />}
+                <button onClick={() => setShowAddFuel(!showAddFuel)} className="p-4 bg-white/5 hover:bg-white/20 rounded-2xl transition-all border border-white/10">
+                  {showAddFuel ? <X className="h-6 w-6" /> : <PlusCircle className="h-6 w-6" />}
                 </button>
               </div>
             </div>
 
             <AnimatePresence>
               {showAddFuel && (
-                <motion.form initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }} onSubmit={handleAddFuel} className="mb-10 p-8 bg-brand-gray/50 rounded-[2rem] space-y-5 overflow-hidden border border-brand-dark/5">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                    <div>
-                      <label className="block text-[9px] font-black uppercase text-brand-dark/60 mb-2 px-1">Fuel Name</label>
-                      <input type="text" value={newFuelType} onChange={e => setNewFuelType(e.target.value)} placeholder="e.g. Ultra Diesel" className={`bg-white p-5 rounded-[1rem] w-full font-bold text-brand-dark border border-brand-dark/5 outline-none focus:border-brand-dark/20 ${isRtl ? 'text-right' : 'text-left'}`} required />
+                <motion.form 
+                  initial={{ height: 0, opacity: 0 }} 
+                  animate={{ height: 'auto', opacity: 1 }} 
+                  exit={{ height: 0, opacity: 0 }} 
+                  onSubmit={handleAddFuel} 
+                  className="mb-12 p-10 bg-brand-dark/30 rounded-[3rem] space-y-6 overflow-hidden border border-white/5"
+                >
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div className="space-y-2">
+                      <label className="text-[9px] font-black uppercase text-white/40 tracking-widest px-2">Label</label>
+                      <input type="text" value={newFuelType} onChange={e => setNewFuelType(e.target.value)} placeholder="e.g. Ultra Diesel" className="bg-white/5 p-6 rounded-2xl w-full font-bold text-white border border-white/10 outline-none focus:border-brand-main/40" required />
                     </div>
-                    <div>
-                      <label className="block text-[9px] font-black uppercase text-brand-dark/60 mb-2 px-1">Price (IQD/L)</label>
-                      <input type="number" value={newFuelPrice} onChange={e => setNewFuelPrice(e.target.value)} placeholder="0" className={`bg-white p-5 rounded-[1rem] w-full font-bold text-brand-dark border border-brand-dark/5 outline-none focus:border-brand-dark/20 ${isRtl ? 'text-right' : 'text-left'}`} required />
+                    <div className="space-y-2">
+                      <label className="text-[9px] font-black uppercase text-white/40 tracking-widest px-2">Price/L</label>
+                      <input type="number" value={newFuelPrice} onChange={e => setNewFuelPrice(e.target.value)} placeholder="0" className="bg-white/5 p-6 rounded-2xl w-full font-bold text-white border border-white/10 outline-none focus:border-brand-main/40" required />
                     </div>
                   </div>
-                  <button type="submit" disabled={isProcessing} className="w-full bg-brand-dark text-white py-5 rounded-[1rem] font-black uppercase text-[10px] tracking-[0.3em] disabled:opacity-50 shadow-2xl">
-                    {isProcessing ? <Loader2 className="animate-spin mx-auto h-4 w-4" /> : t('admin.addFuel')}
+                  <button type="submit" disabled={isProcessing} className="w-full bg-white text-brand-dark py-6 rounded-2xl font-black uppercase text-[11px] tracking-[0.5em] shadow-2xl transition-all hover:bg-brand-main">
+                    Deploy Fuel Grade
                   </button>
                 </motion.form>
               )}
             </AnimatePresence>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {fuelPrices.map(f => (
-                <div key={f.type} className={`p-6 rounded-[1.5rem] bg-brand-gray/30 group border border-transparent hover:border-brand-dark/5 transition-all flex flex-col justify-between ${isRtl ? 'text-right' : 'text-left'}`}>
-                  <div className={`flex justify-between items-start mb-4 ${isRtl ? 'flex-row-reverse' : ''}`}>
-                    <span className="font-black uppercase text-[11px] text-brand-dark tracking-tight opacity-70">{f.type}</span>
-                    <button onClick={() => { if(confirm(t('admin.deleteConfirm'))) removeFuelPrice(f.type) }} className="p-2 text-red-500/20 hover:text-red-500 hover:bg-red-50 rounded-lg transition-all">
-                      <Trash2 className="h-4 w-4" />
+            <div className="space-y-6 flex-grow">
+              {fuelPrices.map(fuel => (
+                <div key={fuel.type} className={`p-8 rounded-[2.5rem] bg-white/5 group border border-white/5 hover:bg-white/10 transition-all flex flex-col md:flex-row items-center justify-between gap-6 ${isRtl ? 'md:flex-row-reverse' : ''}`}>
+                  <div className={`flex items-center space-x-6 ${isRtl ? 'space-x-reverse' : ''}`}>
+                    <button onClick={() => confirm(`Permanently decommission ${fuel.type}?`) && removeFuelPrice(fuel.type)} className="p-3 text-white/20 hover:text-red-500 hover:bg-red-500/10 rounded-xl transition-all">
+                      <Trash2 className="h-5 w-5" />
                     </button>
+                    <span className="font-black uppercase text-lg text-white tracking-tighter">{t(`fuel.${fuel.type.toLowerCase().replace(/\s+/g, '_')}.name`) || fuel.type}</span>
                   </div>
-                  <div className="relative">
+                  <div className="relative w-full md:w-56">
                     <input 
                       type="number" 
-                      value={editedFuelPrices[f.type] ?? f.pricePerLiter} 
-                      onChange={e => setEditedFuelPrices({ ...editedFuelPrices, [f.type]: parseInt(e.target.value) })}
-                      className={`bg-white px-6 py-4 rounded-[1rem] w-full font-black text-brand-dark focus:ring-4 focus:ring-brand-dark/5 outline-none transition-all text-lg ${isRtl ? 'text-left' : 'text-right'}`} 
+                      value={editedFuelPrices[fuel.type] !== undefined ? editedFuelPrices[fuel.type] : fuel.pricePerLiter} 
+                      onChange={e => {
+                        const val = e.target.value === '' ? fuel.pricePerLiter : parseInt(e.target.value);
+                        setEditedFuelPrices({ ...editedFuelPrices, [fuel.type]: val });
+                      }}
+                      className={`bg-brand-dark/40 px-8 py-5 rounded-2xl w-full font-black text-brand-main focus:ring-4 focus:ring-brand-main/10 outline-none transition-all text-xl ${isRtl ? 'text-left' : 'text-right'}`} 
                     />
-                    <span className={`absolute top-1/2 -translate-y-1/2 text-[9px] font-black text-brand-dark/20 uppercase pointer-events-none ${isRtl ? 'left-6' : 'right-6'}`}>IQD / L</span>
+                    <span className={`absolute top-1/2 -translate-y-1/2 text-[10px] font-black text-white/20 uppercase pointer-events-none ${isRtl ? 'left-6' : 'right-6'}`}>IQD/L</span>
                   </div>
                 </div>
               ))}
             </div>
           </div>
 
-          {/* Section: Category Architect */}
-          <div className="bg-brand-dark text-white rounded-[3rem] p-12 shadow-3xl relative overflow-hidden flex flex-col justify-center border border-white/10">
-            <div className="absolute top-0 right-0 w-80 h-80 bg-brand-main/10 blur-[100px] -mr-40 -mt-40" />
-            <div className={`relative z-10 flex items-center justify-between mb-10 ${isRtl ? 'flex-row-reverse' : ''}`}>
-              <div className={`flex items-center space-x-6 ${isRtl ? 'space-x-reverse' : ''}`}>
-                <div className="w-20 h-20 bg-white/10 rounded-[2.5rem] flex items-center justify-center border border-white/5">
-                  <ShoppingBag className="h-10 w-10 text-brand-main" />
+          {/* Module: Service Architecture */}
+          <div className="space-y-16">
+            <div className="bg-brand-dark text-white rounded-[4rem] p-12 shadow-3xl relative overflow-hidden flex flex-col justify-center border border-white/10">
+              <div className="absolute -top-24 -right-24 w-80 h-80 bg-brand-main/10 blur-[100px] rounded-full" />
+              <div className={`relative z-10 flex items-center justify-between mb-12 ${isRtl ? 'flex-row-reverse' : ''}`}>
+                <div className={`flex items-center space-x-8 ${isRtl ? 'space-x-reverse' : ''}`}>
+                  <div className="w-20 h-20 bg-white/10 rounded-[2.5rem] flex items-center justify-center border border-white/10">
+                    <ShoppingBag className="h-10 w-10 text-brand-main" />
+                  </div>
+                  <div>
+                    <h2 className="text-4xl font-black uppercase tracking-tighter">Deploy Category</h2>
+                    <p className="text-[10px] font-bold text-white/30 uppercase tracking-[0.5em] mt-2">Operational Hierarchy</p>
+                  </div>
+                </div>
+                <button onClick={() => setShowAddSection(!showAddSection)} className="p-6 bg-white/5 hover:bg-white/10 rounded-3xl transition-all border border-white/10">
+                  {showAddSection ? <X className="h-8 w-8" /> : <Plus className="h-8 w-8" />}
+                </button>
+              </div>
+              
+              <AnimatePresence>
+                {showAddSection && (
+                  <motion.form 
+                    initial={{ height: 0, opacity: 0 }} 
+                    animate={{ height: 'auto', opacity: 1 }} 
+                    exit={{ height: 0, opacity: 0 }} 
+                    onSubmit={handleAddSection} 
+                    className="space-y-6 overflow-hidden relative z-10"
+                  >
+                    <input 
+                      type="text" 
+                      value={newSectionTitle} 
+                      onChange={e => setNewSectionTitle(e.target.value)} 
+                      placeholder="e.g. Executive Car Wash" 
+                      className={`bg-white/5 p-8 rounded-[2.5rem] w-full font-black text-white placeholder-white/10 border border-white/5 outline-none focus:border-brand-main/30 transition-all text-2xl ${isRtl ? 'text-right' : 'text-left'}`} 
+                      required 
+                    />
+                    <button type="submit" disabled={isProcessing} className="w-full bg-white text-brand-dark py-7 rounded-[2.5rem] font-black uppercase text-xs tracking-[0.6em] shadow-3xl hover:bg-brand-main transition-all">
+                      Construct Environment
+                    </button>
+                  </motion.form>
+                )}
+              </AnimatePresence>
+              {!showAddSection && (
+                 <p className="text-white/10 text-[9px] font-black uppercase tracking-[0.8em] text-center mt-8">Manual Entry Node Locked</p>
+              )}
+            </div>
+
+            {/* Global Access Node */}
+            <div className="bg-white rounded-[4rem] p-12 shadow-3xl border border-white/10 relative overflow-hidden group">
+              <div className="absolute top-0 right-0 w-32 h-32 bg-brand-light/5 rounded-full -mr-16 -mt-16 transition-transform group-hover:scale-150" />
+              <div className={`flex items-center space-x-8 mb-12 ${isRtl ? 'space-x-reverse' : ''}`}>
+                <div className="w-16 h-16 bg-brand-light/10 rounded-[1.8rem] flex items-center justify-center">
+                  <Phone className="h-8 w-8 text-brand-dark" />
                 </div>
                 <div>
-                  <h2 className="text-3xl font-black uppercase tracking-widest">{t('admin.addCategory')}</h2>
-                  <p className="text-[10px] font-bold text-white/30 uppercase tracking-[0.4em] mt-2">New Operational Unit</p>
+                  <h2 className="text-3xl font-black text-brand-dark uppercase tracking-tighter">Contact Node</h2>
+                  <p className="text-[10px] font-bold text-brand-dark/20 uppercase tracking-[0.5em] mt-2">Master Broadcast Number</p>
                 </div>
               </div>
-              <button onClick={() => setShowAddSection(!showAddSection)} className="p-5 bg-white/10 hover:bg-white/20 rounded-[2rem] transition-all">
-                {showAddSection ? <X className="h-6 w-6" /> : <Plus className="h-6 w-6" />}
-              </button>
+              <div className="relative">
+                <input 
+                  type="text" 
+                  defaultValue={contactPhone} 
+                  onBlur={e => { updatePhone(e.target.value); notify("Global contact info updated."); }} 
+                  className={`w-full bg-brand-gray/50 px-10 py-8 rounded-[2.5rem] border-2 border-transparent focus:border-brand-dark/10 focus:bg-white focus:outline-none transition-all font-black text-brand-dark text-4xl ${isRtl ? 'text-right' : 'text-left'}`} 
+                  dir="ltr" 
+                />
+              </div>
+              <p className="text-[10px] font-bold text-brand-dark/30 uppercase tracking-[0.5em] mt-10 text-center">Propagates across all digital interfaces.</p>
             </div>
-            
-            <AnimatePresence>
-              {showAddSection && (
-                <motion.form 
-                  initial={{ height: 0, opacity: 0 }} 
-                  animate={{ height: 'auto', opacity: 1 }} 
-                  exit={{ height: 0, opacity: 0 }} 
-                  onSubmit={handleAddSection} 
-                  className="space-y-6 overflow-hidden relative z-10"
-                >
-                  <input 
-                    type="text" 
-                    value={newSectionTitle} 
-                    onChange={e => setNewSectionTitle(e.target.value)} 
-                    placeholder={t('admin.categoryPlaceholder')} 
-                    className={`bg-white/10 p-8 rounded-[2rem] w-full font-black text-white placeholder-white/20 border border-white/5 outline-none focus:border-white/30 transition-all text-xl ${isRtl ? 'text-right' : 'text-left'}`} 
-                    required 
-                  />
-                  <button type="submit" disabled={isProcessing} className="w-full bg-white text-brand-dark py-6 rounded-[2rem] font-black uppercase text-[12px] tracking-[0.5em] shadow-3xl hover:scale-[1.02] active:scale-95 transition-all disabled:opacity-50">
-                    {isProcessing ? <Loader2 className="animate-spin mx-auto h-5 w-5" /> : 'Construct Category'}
-                  </button>
-                </motion.form>
-              )}
-            </AnimatePresence>
-            {!showAddSection && (
-               <p className="text-white/20 text-[9px] font-bold uppercase tracking-[0.6em] text-center mt-6">Secure Manual Entry Node</p>
-            )}
           </div>
 
-          {/* Section: Dynamic Category Management */}
-          {customSections.map(section => {
-            const itemsInThisSection = section.items.map(i => i.id);
-            const isDirty = itemsInThisSection.some(id => editedItemPrices[id] !== undefined);
+          {/* Module: Dynamic Categories Content */}
+          <div className="lg:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-16">
+            {customSections.map(section => {
+              const itemsInSection = section.items.map(i => i.id);
+              const hasDirtyPrices = itemsInSection.some(id => editedItemPrices[id] !== undefined && editedItemPrices[id] !== section.items.find(i => i.id === id)?.price);
 
-            return (
-              <div key={section.id} className="bg-white rounded-[3rem] p-10 shadow-3xl border-t-[12px] border-brand-dark">
-                <div className={`flex items-center justify-between mb-10 ${isRtl ? 'flex-row-reverse' : ''}`}>
-                  <div className={`flex items-center space-x-6 ${isRtl ? 'space-x-reverse' : ''}`}>
-                    <div className="w-16 h-16 bg-brand-dark/5 rounded-[1.8rem] flex items-center justify-center">
-                      <LayoutGrid className="h-7 w-7 text-brand-dark" />
-                    </div>
-                    <div>
-                      <h2 className="text-2xl font-black text-brand-dark uppercase tracking-widest">{t(section.title)}</h2>
-                      <p className="text-[10px] font-bold text-brand-dark/30 uppercase tracking-[0.4em] mt-2">{section.items.length} ACTIVE SERVICES</p>
-                    </div>
-                  </div>
-                  <div className={`flex items-center space-x-3 ${isRtl ? 'space-x-reverse' : ''}`}>
-                    {isDirty && (
-                      <button 
-                        onClick={() => handleSaveItems(section.id)}
-                        disabled={isProcessing}
-                        className="flex items-center space-x-2 px-8 py-4 bg-brand-dark text-white rounded-[1.2rem] font-black text-[10px] uppercase tracking-widest hover:bg-brand-dark/90 shadow-2xl transition-all"
-                      >
-                        <Save className="h-4 w-4" />
-                        <span>Update List</span>
-                      </button>
-                    )}
-                    <button 
-                      onClick={() => setNewItemSectionId(newItemSectionId === section.id ? null : section.id)} 
-                      className="p-4 bg-brand-gray hover:bg-brand-dark/10 rounded-[1.2rem] text-brand-dark transition-all"
-                    >
-                      {newItemSectionId === section.id ? <X className="h-6 w-6" /> : <PlusCircle className="h-6 w-6" />}
-                    </button>
-                    <button 
-                      onClick={() => { if(confirm(t('admin.deleteConfirm'))) removeCustomSection(section.id) }} 
-                      className="p-4 bg-red-50 text-red-400 hover:bg-red-500 hover:text-white rounded-[1.2rem] transition-all shadow-sm"
-                    >
-                      <Trash2 className="h-6 w-6" />
-                    </button>
-                  </div>
-                </div>
-
-                <AnimatePresence>
-                  {newItemSectionId === section.id && (
-                    <motion.form initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }} onSubmit={handleAddItemToSection} className="mb-10 p-8 bg-brand-gray/50 rounded-[2rem] space-y-5 overflow-hidden border border-brand-dark/5">
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                        <div>
-                          <label className="block text-[9px] font-black uppercase text-brand-dark/60 mb-2 px-2">Item Name</label>
-                          <input type="text" value={newItemName} onChange={e => setNewItemName(e.target.value)} placeholder="e.g. Full Polish" className={`bg-white p-5 rounded-[1.2rem] w-full font-bold text-brand-dark border border-brand-dark/5 outline-none focus:border-brand-dark/20 ${isRtl ? 'text-right' : 'text-left'}`} required />
-                        </div>
-                        <div>
-                          <label className="block text-[9px] font-black uppercase text-brand-dark/60 mb-2 px-2">Price (IQD)</label>
-                          <input type="number" value={newItemPrice} onChange={e => setNewItemPrice(e.target.value)} placeholder="0" className={`bg-white p-5 rounded-[1.2rem] w-full font-bold text-brand-dark border border-brand-dark/5 outline-none focus:border-brand-dark/20 ${isRtl ? 'text-right' : 'text-left'}`} required />
-                        </div>
+              return (
+                <div key={section.id} className="bg-white rounded-[4rem] p-12 shadow-3xl border-t-[16px] border-brand-dark flex flex-col h-full">
+                  <div className={`flex items-center justify-between mb-12 ${isRtl ? 'flex-row-reverse' : ''}`}>
+                    <div className={`flex items-center space-x-6 ${isRtl ? 'space-x-reverse' : ''}`}>
+                      <div className="w-16 h-16 bg-brand-dark/5 rounded-[1.8rem] flex items-center justify-center">
+                        <ShoppingBag className="h-7 w-7 text-brand-dark" />
                       </div>
-                      <button type="submit" disabled={isProcessing} className="w-full bg-brand-dark text-white py-5 rounded-[1.2rem] font-black uppercase text-[10px] tracking-[0.4em] shadow-xl">
-                        {isProcessing ? <Loader2 className="animate-spin mx-auto h-4 w-4" /> : 'Confirm New Item'}
-                      </button>
-                    </motion.form>
-                  )}
-                </AnimatePresence>
-
-                <div className="space-y-4">
-                  {section.items.map(item => (
-                    <div key={item.id} className={`flex justify-between items-center p-5 rounded-[1.5rem] bg-brand-gray/20 group border border-transparent hover:border-brand-dark/5 transition-all ${isRtl ? 'flex-row-reverse' : ''}`}>
-                      <div className={`flex items-center space-x-4 ${isRtl ? 'space-x-reverse' : ''}`}>
-                        <button onClick={() => { if(confirm(t('admin.deleteConfirm'))) removeItemFromCustomSection(section.id, item.id) }} className="p-3 text-red-500/20 hover:text-red-500 hover:bg-red-50 rounded-xl transition-all">
-                          <Trash2 className="h-4 w-4" />
+                      <div>
+                        <h2 className="text-2xl font-black text-brand-dark uppercase tracking-tight">{t(section.title)}</h2>
+                        <p className="text-[10px] font-bold text-brand-dark/30 uppercase tracking-[0.4em] mt-2">{section.items.length} ACTIVE SERVICES</p>
+                      </div>
+                    </div>
+                    <div className="flex items-center space-x-3">
+                      {hasDirtyPrices && (
+                        <button onClick={() => handleBatchSaveItems(section.id)} className="p-4 bg-brand-dark text-white rounded-2xl hover:bg-brand-main hover:text-brand-dark transition-all shadow-xl">
+                          <Save className="h-5 w-5" />
                         </button>
-                        <span className="font-black uppercase text-[12px] text-brand-dark/60 group-hover:text-brand-dark transition-colors tracking-tight">
-                          {t(item.name)}
-                        </span>
-                      </div>
-                      <div className="relative">
-                        <input 
-                          type="number" 
-                          value={editedItemPrices[item.id] ?? item.price} 
-                          onChange={e => setEditedItemPrices({ ...editedItemPrices, [item.id]: parseInt(e.target.value) })}
-                          className={`bg-white px-6 py-4 rounded-[1.2rem] w-40 font-black text-brand-dark focus:ring-4 focus:ring-brand-dark/5 outline-none transition-all text-lg ${isRtl ? 'text-left' : 'text-right'}`} 
-                        />
-                        <span className={`absolute top-1/2 -translate-y-1/2 text-[9px] font-black text-brand-dark/20 uppercase pointer-events-none ${isRtl ? 'left-4' : 'right-4'}`}>IQD</span>
-                      </div>
+                      )}
+                      <button onClick={() => setActiveItemSectionId(activeItemSectionId === section.id ? null : section.id)} className="p-4 bg-brand-gray hover:bg-brand-dark/10 rounded-2xl text-brand-dark transition-all">
+                        {activeItemSectionId === section.id ? <X className="h-5 w-5" /> : <Plus className="h-5 w-5" />}
+                      </button>
+                      <button onClick={() => confirm(`Permanently dissolve ${t(section.title)}?`) && removeCustomSection(section.id)} className="p-4 bg-red-50 text-red-500 hover:bg-red-500 hover:text-white rounded-2xl transition-all">
+                        <Trash2 className="h-5 w-5" />
+                      </button>
                     </div>
-                  ))}
-                  {section.items.length === 0 && (
-                    <div className="text-center py-16 border-2 border-dashed border-brand-dark/5 rounded-[2rem]">
-                      <ShoppingBag className="h-10 w-10 text-brand-dark/5 mx-auto mb-4" />
-                      <p className="text-brand-dark/10 text-[10px] font-black uppercase tracking-[0.6em]">{t('admin.noItems')}</p>
-                    </div>
-                  )}
-                </div>
-              </div>
-            );
-          })}
+                  </div>
 
-          {/* Section: Master Contact Settings */}
-          <div className="bg-white rounded-[3rem] p-12 shadow-3xl border border-brand-dark/5 relative overflow-hidden">
-            <div className="absolute top-0 right-0 w-40 h-40 bg-brand-dark/5 rounded-full -mr-20 -mt-20" />
-            <div className={`flex items-center space-x-6 mb-12 ${isRtl ? 'space-x-reverse' : ''}`}>
-              <div className="w-16 h-16 bg-brand-dark/5 rounded-[1.8rem] flex items-center justify-center">
-                <Phone className="h-7 w-7 text-brand-dark" />
-              </div>
-              <div>
-                <h2 className="text-2xl font-black text-brand-dark uppercase tracking-widest">{t('admin.contactPhone')}</h2>
-                <p className="text-[9px] font-bold text-brand-dark/30 uppercase tracking-[0.4em] mt-2">Global Access Number</p>
-              </div>
-            </div>
-            <div className="relative group">
-              <input 
-                type="text" 
-                defaultValue={contactPhone} 
-                onBlur={e => { updatePhone(e.target.value); notify(t('admin.settingsSaved')) }} 
-                className={`w-full bg-brand-gray px-10 py-8 rounded-[2rem] border-2 border-transparent focus:border-brand-dark/10 focus:bg-white focus:outline-none transition-all font-black text-brand-dark text-3xl group-hover:shadow-3xl ${isRtl ? 'text-right' : 'text-left'}`} 
-                dir="ltr" 
-              />
-              <div className={`absolute top-1/2 -translate-y-1/2 pointer-events-none opacity-20 ${isRtl ? 'left-10' : 'right-10'}`}>
-                <CheckCircle className="h-8 w-8 text-brand-dark" />
-              </div>
-            </div>
-            <p className="text-[10px] font-bold text-brand-dark/40 uppercase tracking-[0.5em] mt-8 text-center leading-relaxed">Changes to this field propagate across all <br /> footer and about page contact nodes instantly.</p>
+                  <AnimatePresence>
+                    {activeItemSectionId === section.id && (
+                      <motion.form 
+                        initial={{ height: 0, opacity: 0 }} 
+                        animate={{ height: 'auto', opacity: 1 }} 
+                        exit={{ height: 0, opacity: 0 }} 
+                        onSubmit={handleAddItemToSection} 
+                        className="mb-12 p-8 bg-brand-gray rounded-[2.5rem] space-y-6 overflow-hidden border border-brand-dark/5 shadow-inner"
+                      >
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                          <div className="space-y-2">
+                            <label className="text-[9px] font-black uppercase text-brand-dark/40 tracking-widest px-2">Label</label>
+                            <input type="text" value={newItemName} onChange={e => setNewItemName(e.target.value)} placeholder="e.g. Service Name" className="bg-white p-5 rounded-2xl w-full font-bold text-brand-dark border border-brand-dark/5 outline-none focus:border-brand-dark/20" required />
+                          </div>
+                          <div className="space-y-2">
+                            <label className="text-[9px] font-black uppercase text-brand-dark/40 tracking-widest px-2">Price IQD</label>
+                            <input type="number" value={newItemPrice} onChange={e => setNewItemPrice(e.target.value)} placeholder="0" className="bg-white p-5 rounded-2xl w-full font-bold text-brand-dark border border-brand-dark/5 outline-none focus:border-brand-dark/20" required />
+                          </div>
+                        </div>
+                        <button type="submit" disabled={isProcessing} className="w-full bg-brand-dark text-white py-6 rounded-2xl font-black uppercase text-[10px] tracking-[0.5em] shadow-xl hover:bg-brand-main hover:text-brand-dark transition-all">
+                          Inject Registry Item
+                        </button>
+                      </motion.form>
+                    )}
+                  </AnimatePresence>
+
+                  <div className="space-y-4 flex-grow">
+                    {section.items.map(item => (
+                      <div key={item.id} className={`flex justify-between items-center p-6 rounded-[2rem] bg-brand-gray/30 group border border-transparent hover:border-brand-dark/5 transition-all ${isRtl ? 'flex-row-reverse' : ''}`}>
+                        <div className={`flex items-center space-x-5 ${isRtl ? 'space-x-reverse' : ''}`}>
+                          <button onClick={() => confirm(`Erase ${t(item.name)} from history?`) && removeItemFromCustomSection(section.id, item.id)} className="p-3 text-brand-dark/20 hover:text-red-500 hover:bg-white rounded-xl transition-all">
+                            <Trash2 className="h-4 w-4" />
+                          </button>
+                          <span className="font-black uppercase text-sm text-brand-dark tracking-tight leading-none">{t(item.name)}</span>
+                        </div>
+                        <div className="relative">
+                          <input 
+                            type="number" 
+                            value={editedItemPrices[item.id] !== undefined ? editedItemPrices[item.id] : item.price} 
+                            onChange={e => {
+                              const val = e.target.value === '' ? item.price : parseInt(e.target.value);
+                              setEditedItemPrices({ ...editedItemPrices, [item.id]: val });
+                            }}
+                            className={`bg-white px-8 py-4 rounded-xl w-40 font-black text-brand-dark focus:ring-4 focus:ring-brand-dark/5 outline-none transition-all text-lg ${isRtl ? 'text-left' : 'text-right'}`} 
+                          />
+                          <span className={`absolute top-1/2 -translate-y-1/2 text-[10px] font-black text-brand-dark/20 uppercase pointer-events-none ${isRtl ? 'left-4' : 'right-4'}`}>IQD</span>
+                        </div>
+                      </div>
+                    ))}
+                    {section.items.length === 0 && (
+                      <div className="text-center py-20 border-4 border-dashed border-brand-dark/5 rounded-[3rem]">
+                        <Plus className="h-10 w-10 text-brand-dark/10 mx-auto mb-4" />
+                        <p className="text-brand-dark/10 text-[10px] font-black uppercase tracking-[0.6em]">Registry Void</p>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              );
+            })}
           </div>
         </div>
       </div>
