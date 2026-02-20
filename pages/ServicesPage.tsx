@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
@@ -61,13 +62,17 @@ const ServicesPage: React.FC = () => {
                     <Star className="h-8 w-8" />
                   </div>
                   
-                  <h4 className="text-4xl font-black uppercase tracking-tighter text-white mb-10 transition-colors">{section.title}</h4>
+                  <h4 className="text-4xl font-black uppercase tracking-tighter text-white mb-10 transition-colors">
+                    {t(section.title)}
+                  </h4>
                   
                   <div className="space-y-6 flex-grow">
                     {section.items.map(item => (
                       <div key={item.id} className={`flex justify-between items-end border-b border-white/10 pb-4 group/item ${isRtl ? 'flex-row-reverse' : ''}`}>
                         <div className={`flex flex-col ${isRtl ? 'text-right' : 'text-left'}`}>
-                          <span className="font-black text-white uppercase text-sm tracking-tight transition-colors">{item.name}</span>
+                          <span className="font-black text-white uppercase text-sm tracking-tight transition-colors">
+                            {t(item.name)}
+                          </span>
                           <span className="text-[9px] font-bold text-white/40 uppercase tracking-widest opacity-0 group-hover/item:opacity-100 transition-opacity">{t('services.premiumGrade')}</span>
                         </div>
                         <div className={isRtl ? 'text-left' : 'text-right'}>
