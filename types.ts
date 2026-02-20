@@ -3,7 +3,10 @@
 export enum FuelType {
   NORMAL = 'Normal Kar',
   ENHANCED = 'Enhanced',
-  SUPER = 'Super'
+  SUPER = 'Super',
+  ELITE_GASOLINE = 'Elite Gasoline',
+  PURE_KEROSENE = 'Pure Kerosene',
+  REFINED_LPG = 'Refined LPG'
 }
 
 export type Language = 'en' | 'ku-ba' | 'ku-so' | 'ar' | 'tr';

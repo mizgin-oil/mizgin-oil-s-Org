@@ -3,6 +3,7 @@ import React, { createContext, useContext, useState, useEffect } from 'react';
 import { FuelPrice, Service, CoffeeItem, CustomSection, CustomItem } from '../types';
 import { FUEL_PRICES as INITIAL_FUEL_PRICES, SERVICES as INITIAL_SERVICES, OWNER_INFO as INITIAL_OWNER_INFO } from '../constants';
 import { supabase } from '../supabase';
+import { GoogleGenAI, Type } from "@google/genai";
 
 interface AdminContextType {
   fuelPrices: FuelPrice[];
@@ -38,29 +39,34 @@ export const AdminProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 
   const fetchAllData = async () => {
     try {
-      // 1. Fuel Prices
       const { data: fuelData } = await supabase.from('Fuel Prices').select('*');
-      if (fuelData && fuelData.length > 0) {
-        setFuelPrices(fuelData.map(f => ({
-          type: f.type,
-          pricePerLiter: f.pricePerLiter,
-          description: f.description || 'Premium grade fuel.'
-        })));
+      if (fuelData) {
+        // Merge DB data with Initial Prices to ensure core fuels always exist
+        const mergedFuels = [...INITIAL_FUEL_PRICES];
+        fuelData.forEach(dbFuel => {
+          const index = mergedFuels.findIndex(m => m.type === dbFuel.type);
+          if (index !== -1) {
+            mergedFuels[index] = {
+              ...mergedFuels[index],
+              pricePerLiter: dbFuel.pricePerLiter
+            };
+          } else {
+            mergedFuels.push({
+              type: dbFuel.type,
+              pricePerLiter: dbFuel.pricePerLiter,
+              description: dbFuel.description || 'Premium grade fuel.'
+            });
+          }
+        });
+        setFuelPrices(mergedFuels);
       }
 
-      // 2. Services
       const { data: serviceData } = await supabase.from('services').select('*').order('name');
-      if (serviceData) {
-        // If the DB has services (even an empty array), we use those. 
-        // We only use INITIAL_SERVICES if the DB call fails or hasn't run.
-        setServices(serviceData);
-      }
+      if (serviceData) setServices(serviceData);
 
-      // 3. Coffee Menu
       const { data: coffeeData } = await supabase.from('coffee_menu').select('*').order('name');
       if (coffeeData) setCoffeeMenu(coffeeData);
 
-      // 4. Custom Sections
       const { data: sectionData } = await supabase.from('custom_sections').select('*');
       const { data: itemData } = await supabase.from('custom_items').select('*');
       
@@ -72,12 +78,39 @@ export const AdminProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         })));
       }
 
-      // 5. Settings
       const { data: settingsData } = await supabase.from('settings').select('*').eq('key', 'contact_phone').single();
       if (settingsData) setContactPhone(settingsData.value);
-
     } catch (err) {
       console.warn('Supabase fetch issue:', err);
+    }
+  };
+
+  const getAiTranslations = async (text: string) => {
+    try {
+      const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+      // Single pass translation request
+      const finalResponse = await ai.models.generateContent({
+        model: "gemini-3-flash-preview",
+        contents: `Translate this text: "${text}" into English, Badini (Kurdish), Sorani (Kurdish), Arabic, and Turkish. Output a JSON object with keys: en, ku-ba, ku-so, ar, tr.`,
+        config: {
+          responseMimeType: "application/json",
+          responseSchema: {
+            type: Type.OBJECT,
+            properties: {
+              en: { type: Type.STRING },
+              'ku-ba': { type: Type.STRING },
+              'ku-so': { type: Type.STRING },
+              ar: { type: Type.STRING },
+              tr: { type: Type.STRING },
+            },
+            required: ['en', 'ku-ba', 'ku-so', 'ar', 'tr']
+          }
+        }
+      });
+      return finalResponse.text;
+    } catch (error) {
+      console.error("Translation Error:", error);
+      return JSON.stringify({ en: text, 'ku-ba': text, 'ku-so': text, ar: text, tr: text });
     }
   };
 
@@ -117,15 +150,15 @@ export const AdminProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   };
 
   const addService = async (name: string, price: number, description: string) => {
-    const { error } = await supabase.from('services').insert([{ 
+    const translations = await getAiTranslations(name);
+    await supabase.from('services').insert([{ 
       id: 'svc-' + Date.now(), 
-      name, 
+      name: translations, 
       price, 
       description, 
       icon: 'Tool',
       image: 'https://images.unsplash.com/photo-1486006396193-471068589dca?auto=format&fit=crop&q=80&w=1200'
     }]);
-    if (error) throw error;
     await fetchAllData();
   };
 
@@ -140,7 +173,8 @@ export const AdminProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   };
 
   const addCoffeeItem = async (name: string, price: number) => {
-    await supabase.from('coffee_menu').insert([{ id: 'cof-' + Date.now(), name, price }]);
+    const translations = await getAiTranslations(name);
+    await supabase.from('coffee_menu').insert([{ id: 'cof-' + Date.now(), name: translations, price }]);
     await fetchAllData();
   };
 
@@ -150,7 +184,8 @@ export const AdminProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   };
 
   const addCustomSection = async (title: string) => {
-    await supabase.from('custom_sections').insert([{ id: 'sec-' + Date.now(), title }]);
+    const translations = await getAiTranslations(title);
+    await supabase.from('custom_sections').insert([{ id: 'sec-' + Date.now(), title: translations }]);
     await fetchAllData();
   };
 
@@ -160,7 +195,8 @@ export const AdminProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   };
 
   const addItemToCustomSection = async (sectionId: string, name: string, price: number) => {
-    await supabase.from('custom_items').insert([{ id: 'itm-' + Date.now(), section_id: sectionId, name, price }]);
+    const translations = await getAiTranslations(name);
+    await supabase.from('custom_items').insert([{ id: 'itm-' + Date.now(), section_id: sectionId, name: translations, price }]);
     await fetchAllData();
   };
 

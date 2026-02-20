@@ -14,7 +14,6 @@ const LanguageContext = createContext<LanguageContextType | undefined>(undefined
 export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [language, setLanguageState] = useState<Language>(() => {
     const saved = localStorage.getItem('mizgin_lang');
-    // Default to 'ku-ba' (Kurdish Badini) as requested
     return (saved as Language) || 'ku-ba';
   });
 
@@ -31,10 +30,28 @@ export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   }, [language]);
 
   const t = (keyPath: string) => {
+    // Check if keyPath is actually a JSON string from AI translations
+    if (keyPath.startsWith('{') && keyPath.endsWith('}')) {
+      try {
+        const data = JSON.parse(keyPath);
+        return data[language] || data['en'] || keyPath;
+      } catch (e) {
+        // Not a JSON string after all
+      }
+    }
+
     const keys = keyPath.split('.');
     let result: any = translations[language];
     for (const key of keys) {
-      if (result[key] === undefined) return keyPath;
+      if (!result || result[key] === undefined) {
+        // Fallback to English if key missing in current language
+        let fallback: any = translations['en'];
+        for (const fKey of keys) {
+          if (!fallback || fallback[fKey] === undefined) return keyPath;
+          fallback = fallback[fKey];
+        }
+        return fallback;
+      }
       result = result[key];
     }
     return result;

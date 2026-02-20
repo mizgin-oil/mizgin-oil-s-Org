@@ -20,6 +20,21 @@ export const FUEL_PRICES: FuelPrice[] = [
     type: 'Super',
     pricePerLiter: 1250,
     description: 'High-octane premium blend for maximum power and engine protection.'
+  },
+  {
+    type: 'Elite Gasoline',
+    pricePerLiter: 1000,
+    description: 'Refined grades tailored for specialized engine performance.'
+  },
+  {
+    type: 'Pure Kerosene',
+    pricePerLiter: 1000,
+    description: 'Ultra-high purity for critical industrial and domestic heating.'
+  },
+  {
+    type: 'Refined LPG',
+    pricePerLiter: 1000,
+    description: 'Clean, consistent energy flow for sustainable applications.'
   }
 ];
 

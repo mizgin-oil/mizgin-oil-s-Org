@@ -1,4 +1,3 @@
-
 import React, { Suspense, lazy } from 'react';
 import { HashRouter as Router, Routes, Route } from 'react-router-dom';
 import { Layout } from './components/Layout';
@@ -9,6 +8,7 @@ import { motion } from 'framer-motion';
 // Lazy load pages for performance
 const HomePage = lazy(() => import('./pages/HomePage'));
 const ServicesPage = lazy(() => import('./pages/ServicesPage'));
+const CalculatorPage = lazy(() => import('./pages/CalculatorPage'));
 const AboutPage = lazy(() => import('./pages/AboutPage'));
 const AdminPage = lazy(() => import('./pages/AdminPage'));
 
@@ -50,6 +50,7 @@ function App() {
               <Routes>
                 <Route path="/" element={<HomePage />} />
                 <Route path="/services" element={<ServicesPage />} />
+                <Route path="/calculator" element={<CalculatorPage />} />
                 <Route path="/about" element={<AboutPage />} />
                 <Route path="/admin" element={<AdminPage />} />
               </Routes>

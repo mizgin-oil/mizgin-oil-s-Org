@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Menu, X, MapPin, Phone, Instagram, Facebook, Lock, Globe, ChevronDown } from 'lucide-react';
@@ -35,6 +36,7 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) =>
   const navLinks = [
     { path: '/', label: t('nav.experience') },
     { path: '/services', label: t('nav.services') },
+    { path: '/calculator', label: t('nav.calculator') },
     { path: '/about', label: t('nav.legacy') },
   ];
 
@@ -52,7 +54,7 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) =>
     instagram: 'https://www.instagram.com/mizgin.oil.station'
   };
 
-  const isDarkBgPage = location.pathname === '/' || location.pathname === '/services' || location.pathname === '/about';
+  const isDarkBgPage = location.pathname === '/' || location.pathname === '/services' || location.pathname === '/about' || location.pathname === '/calculator';
   const useDarkText = scrolled || (!isDarkBgPage);
 
   return (
@@ -126,7 +128,7 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) =>
                             setLanguage(lang.code);
                             setIsLangOpen(false);
                           }}
-                          className={`w-full text-left px-4 py-2 rounded-xl text-xs font-bold transition-colors ${isRtl ? 'text-right' : 'text-left'} ${language === lang.code ? 'bg-brand-main text-white' : 'text-white/70 hover:bg-white/10'}`}
+                          className={`w-full text-left px-4 py-2 rounded-xl text-xs font-bold transition-colors ${isRtl ? 'text-right' : 'text-left'} ${language === lang.code ? 'bg-brand-main text-brand-dark' : 'text-white/70 hover:bg-white/10'}`}
                         >
                           {lang.label}
                         </button>
@@ -170,7 +172,11 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) =>
                     key={link.path}
                     to={link.path}
                     onClick={() => setIsMenuOpen(false)}
-                    className={`px-4 py-4 rounded-2xl text-lg font-black transition-all ${location.pathname === link.path ? 'bg-brand-main text-white' : 'text-brand-gray hover:bg-brand-main/10'}`}
+                    className={`px-4 py-4 rounded-2xl text-lg font-black transition-all ${
+                      location.pathname === link.path 
+                        ? 'bg-brand-dark text-white' 
+                        : 'text-brand-dark hover:bg-brand-dark/10'
+                    }`}
                   >
                     {link.label}
                   </Link>
@@ -197,7 +203,7 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) =>
                         setLanguage(lang.code);
                         setIsLangOpen(false);
                       }}
-                      className={`w-full text-left px-4 py-3 rounded-xl text-sm font-black transition-colors ${isRtl ? 'text-right' : 'text-left'} ${language === lang.code ? 'bg-brand-main text-white' : 'text-white/70'}`}
+                      className={`w-full text-left px-4 py-3 rounded-xl text-sm font-black transition-colors ${isRtl ? 'text-right' : 'text-left'} ${language === lang.code ? 'bg-brand-main text-brand-dark' : 'text-white/70'}`}
                     >
                       {lang.label}
                     </button>

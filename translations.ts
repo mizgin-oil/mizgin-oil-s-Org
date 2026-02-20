@@ -4,11 +4,15 @@ export const translations = {
     fuel: {
       normal_kar: { name: 'Normal Kar', desc: 'Standard performance fuel for everyday commuting and reliability.' },
       enhanced: { name: 'Enhanced', desc: 'Optimized combustion for better mileage and engine cleanliness.' },
-      super: { name: 'Super', desc: 'High-octane premium blend for maximum power and engine protection.' }
+      super: { name: 'Super', desc: 'High-octane premium blend for maximum power and engine protection.' },
+      elite_gasoline: { name: 'Elite Gasoline', desc: 'Refined grades tailored for specialized engine performance.' },
+      pure_kerosene: { name: 'Pure Kerosene', desc: 'Ultra-high purity for critical industrial and domestic heating.' },
+      refined_lpg: { name: 'Refined LPG', desc: 'Clean, consistent energy flow for sustainable applications.' }
     },
     nav: {
       experience: 'Experience',
       services: 'Services',
+      calculator: 'Calculator',
       legacy: 'Legacy',
       admin: 'Admin'
     },
@@ -32,7 +36,8 @@ export const translations = {
       grade: 'Select Grade',
       monetary: 'Monetary Value (IQD)',
       volume: 'Fuel Volume (Liters)',
-      baseRate: 'Base Rate'
+      baseRate: 'Base Rate',
+      pageDesc: 'Use our precision tool to estimate your fuel costs and volume based on real-time market rates.'
     },
     home: {
       planningTitle: 'Precision',
@@ -129,11 +134,15 @@ export const translations = {
     fuel: {
       normal_kar: { name: 'نۆرماڵ کار', desc: 'سوتەمەنیەکا ستاندارد بۆ هاتن و چۆنا ڕۆژانە و پشتڕاستیێ.' },
       enhanced: { name: 'ئین هانسد', desc: 'سوتەمەنیەکا باش بۆ پاقژیا بزوێنەری و مەسرەفەکێ کێمتر.' },
-      super: { name: 'سوپەر', desc: 'باشترین جۆرێ سوتەمەنیێ بۆ هێزا زێدە و پاراستنا بزوێنەری.' }
+      super: { name: 'سوپەر', desc: 'باشترین جۆرێ سوتەمەنیێ بۆ هێزا زێدە و پاراستنا بزوێنەری.' },
+      elite_gasoline: { name: 'بەنزینا نایاب', desc: 'پلەیێن پاڵاوتی کو بۆ ئەدایێ بزوێنەرێن تایبەتمەند هاتینە دروستکرن.' },
+      pure_kerosene: { name: 'نەوتا پاقژ', desc: 'پاقژیا زۆر بلند بۆ گەرمکرنا پیشەسازی و نافخۆیی یا گرنگ.' },
+      refined_lpg: { name: 'گازا LPG', desc: 'بۆڕینا وزەیا پاقژ و بەردەوام بۆ کارپێکرنێن خۆڕاگر.' }
     },
     nav: {
       experience: 'ئەزموون',
       services: 'خزمەتگوزاری',
+      calculator: 'هژمارکەر',
       legacy: 'کەلەپوور',
       admin: 'ئەدمین'
     },
@@ -157,7 +166,8 @@ export const translations = {
       grade: 'جۆرێ سوتەمەنیێ',
       monetary: 'بڕێ پارەی (دینار)',
       volume: 'بڕێ سوتەمەنیێ (لیتر)',
-      baseRate: 'نرخێ بنەڕەتی'
+      baseRate: 'نرخێ بنەڕەتی',
+      pageDesc: 'ئەڤێ ئامیرێ ورد بکاربینە بۆ خەملاندنا تێچوون و بڕێ سوتەمەنیێ ل دویف نرخێن بازاڕی یێن نوو.'
     },
     home: {
       planningTitle: 'پلاندانان',
@@ -254,11 +264,15 @@ export const translations = {
     fuel: {
       normal_kar: { name: 'نۆرماڵ کار', desc: 'سووتەمەنییەکی ستاندارد بۆ هاتوچۆی ڕۆژانە و متمانە.' },
       enhanced: { name: 'ئین هانسد', desc: 'سووتەمەنییەکی باش بۆ پاکی بزوێنەر و مەسرەفی کەمتر.' },
-      super: { name: 'سوپەر', desc: 'باشترین جۆری سووتەمەنی بۆ هێزی زۆر و پاراستنی بزوێنەر.' }
+      super: { name: 'سوپەر', desc: 'باشترین جۆری سووتەمەنی بۆ هێزی زۆر و پاراستنی بزوێنەر.' },
+      elite_gasoline: { name: 'بەنزینی نایاب', desc: 'پلەی پاڵاوتی کە بۆ ئەدای بزوێنەری تایبەت دروستکراوە.' },
+      pure_kerosene: { name: 'نەوتی پاک', desc: 'پاکی زۆر بەرز بۆ گەرمکردنەوەی پیشەسازی و ناوخۆیی.' },
+      refined_lpg: { name: 'گازی LPG', desc: 'ڕۆیشتنی وزەی پاک و بەردەوام بۆ کارپێکردنی جۆراوجۆر.' }
     },
     nav: {
       experience: 'ئەزموون',
       services: 'خزمەتگوزارییەکان',
+      calculator: 'ژمێرەر',
       legacy: 'کەلەپوور',
       admin: 'ئەدمین'
     },
@@ -282,7 +296,8 @@ export const translations = {
       grade: 'جۆری سووتەمەنی',
       monetary: 'بڕی پارە (دینار)',
       volume: 'بڕی سووتەمەنی (لیتر)',
-      baseRate: 'نرخی بنەڕەتی'
+      baseRate: 'نرخی بنەڕەتی',
+      pageDesc: 'ئەم ئامێرە وردە بەکاربهێنە بۆ خەمڵاندنی تێچوو و بڕی سووتەمەنی لەسەر بنەمای نوێترین نرخەکان.'
     },
     home: {
       planningTitle: 'پلاندانانی',
@@ -379,11 +394,15 @@ export const translations = {
     fuel: {
       normal_kar: { name: 'نورمال كار', desc: 'وقود قياسي للتنقل اليومي والموثوقية العالية.' },
       enhanced: { name: 'محسن', desc: 'احتراق محسّن لأداء أفضل للمحرك واستهلاك أقل.' },
-      super: { name: 'سوبر', desc: 'مزيج فائق الأوكتان لأقصى قوة وحماية للمحركات الحديثة.' }
+      super: { name: 'سوبر', desc: 'مزيج فائق الأوكتان لأقصى قوة وحماية للمحركات الحديثة.' },
+      elite_gasoline: { name: 'البنزين المتميز', desc: 'درجات مكررة مصممة خصيصًا لأداء المحركات المتخصصة.' },
+      pure_kerosene: { name: 'الكيروسين النقي', desc: 'نقاء فائق للتدفئة الصناعية والمنزلية الحيوية.' },
+      refined_lpg: { name: 'الغاز المسال LPG', desc: 'تدفق طاقة نظيف ومتسق للتطبيقات المستدامة.' }
     },
     nav: {
       experience: 'الخبرة',
       services: 'الخدمات',
+      calculator: 'الحاسبة',
       legacy: 'الإرث',
       admin: 'المسؤول'
     },
@@ -407,7 +426,8 @@ export const translations = {
       grade: 'اختر النوع',
       monetary: 'القيمة النقدية (د.ع)',
       volume: 'كمية الوقود (لتر)',
-      baseRate: 'السعر الأساسي'
+      baseRate: 'السعر الأساسي',
+      pageDesc: 'استخدم أداتنا الدقيقة لتقدير تكاليف الوقود وكميته بناءً على أسعار السوق الحالية.'
     },
     home: {
       planningTitle: 'التخطيط',
@@ -504,11 +524,15 @@ export const translations = {
     fuel: {
       normal_kar: { name: 'Normal Kar', desc: 'Günlük ulaşım ve yüksek güvenilirlik için standart yakıt.' },
       enhanced: { name: 'Enhanced', desc: 'Daha iyi motor performansı ve yakıt tasarrufu için optimize edilmiştir.' },
-      super: { name: 'Super', desc: 'Maksimum güç ve motor koruması için yüksek oktanlı premium karışım.' }
+      super: { name: 'Super', desc: 'Maksimum güç ve motor koruması için yüksek oktanlı premium karışım.' },
+      elite_gasoline: { name: 'Elit Benzin', desc: 'Özel motor performansı için özel olarak rafine edilmiş kaliteler.' },
+      pure_kerosene: { name: 'Saf Gaz Yağı', desc: 'Kritik endüstriyel ve evsel ısıtma için ultra yüksek saflık.' },
+      refined_lpg: { name: 'Refined LPG', desc: 'Sürdürülebilir uygulamalar için temiz, tutarlı enerji akışı.' }
     },
     nav: {
       experience: 'Deneyim',
       services: 'Hizmetler',
+      calculator: 'Hesaplayıcı',
       legacy: 'Miras',
       admin: 'Yönetici'
     },
@@ -532,7 +556,8 @@ export const translations = {
       grade: 'Tür Seçin',
       monetary: 'Parasal Değer (IQD)',
       volume: 'Yakıt Hacmi (Litre)',
-      baseRate: 'Taban Oranı'
+      baseRate: 'Taban Oranı',
+      pageDesc: 'Gerçek zamanlı piyasa oranlarına göre yakıt maliyetlerinizi ve hacminizi tahmin etmek için hassas aracımızı kullanın.'
     },
     home: {
       planningTitle: 'Hassas',
@@ -604,7 +629,7 @@ export const translations = {
       fuelRates: 'Yakıt Oranları',
       addFuel: 'Yakıt Ekle',
       addCategory: 'Yeni Kategori Ekle',
-      contactPhone: 'İletیشم Telefonu',
+      contactPhone: 'İletیشm Telefonu',
       deleteConfirm: 'Bunu silmek istediğinizden emin misiniz?',
       saving: 'Kaydediliyor...',
       noItems: 'Henüz öğe eklenmedi',
