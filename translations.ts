@@ -63,8 +63,8 @@ export const translations = {
       }
     },
     services: {
-      title: 'Elite',
-      italic: 'Amenities.',
+      title: 'Mizgin',
+      italic: 'Services.',
       sub: 'Concierge & Care',
       desc: 'Tailored excellence for your vehicle and comfort. Discover our full range of manually curated premium services.',
       emptyTitle: 'Elite Hub Building...',
@@ -194,7 +194,7 @@ export const translations = {
     },
     services: {
       title: 'خزمەتگوزاریێن',
-      italic: 'نایاب.',
+      italic: 'مزگین.',
       sub: 'گرنگیپێدان و خزمەت',
       desc: 'بۆ ترۆمبێل و ئارامیا تە. هەمی خزمەتگوزاریێن مە یێن نایاب ببینە.',
       emptyTitle: 'ئاڤاکرنا ناڤەندا نایاب...',
@@ -323,8 +323,8 @@ export const translations = {
       }
     },
     services: {
-      title: 'خزمەتگوزارییە',
-      italic: 'نایابەکان.',
+      title: 'خزمەتگوزارییەکانی',
+      italic: 'مزگین.',
       sub: 'خزمەت و گرنگیپێدان',
       desc: 'باشترین کوالێتی بۆ ئۆتۆمبێل و ئاسودەیی تۆ. هەموو خزمەتگوزارییە نایابەکانمان لێرە ببینە.',
       emptyTitle: 'ناوەندی خزمەتگوزاری لە دروستکردندایە...',
@@ -453,8 +453,8 @@ export const translations = {
       }
     },
     services: {
-      title: 'مرافق',
-      italic: 'نخبوية.',
+      title: 'خدمات',
+      italic: 'مزكين.',
       sub: 'الخدمة والرعاية',
       desc: 'تميز مصمم لسيارتك وراحتك. اكتشف مجموعتنا الكاملة من الخدمات المتميزة والمنسقة يدوياً.',
       emptyTitle: 'مركز النخبة قيد الإنشاء...',
@@ -583,8 +583,8 @@ export const translations = {
       }
     },
     services: {
-      title: 'Elit',
-      italic: 'Olanaklar.',
+      title: 'Mizgin',
+      italic: 'Hizmetleri.',
       sub: 'Hizmet ve Bakım',
       desc: 'Aracınız ve konforunuz için özel mükemmellik. Manuel olarak seçilmiş premium hizmetlerimizin tamamını keşfedin.',
       emptyTitle: 'Elit Merkez İnşa Ediliyor...',

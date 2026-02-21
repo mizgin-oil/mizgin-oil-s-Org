@@ -13,7 +13,7 @@ const ServicesPage: React.FC = () => {
   return (
     <div className={`bg-brand-light min-h-screen ${isRtl ? 'rtl' : 'ltr'}`}>
       {/* Page Header */}
-      <section className="pt-48 pb-32 bg-brand-dark text-white relative overflow-hidden">
+      <section className="pt-24 pb-12 bg-brand-dark text-white relative overflow-hidden">
         <div className="absolute top-0 left-0 w-full h-full opacity-10">
           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-[40vw] font-black uppercase pointer-events-none select-none">
             ELITE
@@ -26,7 +26,7 @@ const ServicesPage: React.FC = () => {
             className={`max-w-3xl ${isRtl ? 'text-right mr-0 ml-auto' : 'text-left'}`}
           >
             <span className="text-white/40 font-black uppercase tracking-[0.5em] text-xs mb-8 block">{t('services.sub')}</span>
-            <h1 className="text-6xl md:text-8xl font-black mb-8 uppercase tracking-tighter leading-[0.85] text-white">
+            <h1 className="text-5xl md:text-7xl font-black mb-8 uppercase tracking-tighter leading-[0.85] text-white">
               {t('services.title')} <br /><span className="text-white italic opacity-70">{t('services.italic')}</span>
             </h1>
             <p className="text-xl text-white/60 font-light max-w-2xl leading-relaxed">
@@ -37,7 +37,7 @@ const ServicesPage: React.FC = () => {
       </section>
 
       {/* Dynamic Content Grid */}
-      <section className="py-32 bg-brand-light">
+      <section className="py-12 bg-brand-light">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           {customSections.length === 0 ? (
             <div className="text-center py-40 glass rounded-[4rem]">
@@ -49,50 +49,40 @@ const ServicesPage: React.FC = () => {
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12">
               {customSections.map((section, idx) => (
-                <motion.div 
-                  key={section.id}
-                  initial={{ opacity: 0, y: 30 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  transition={{ delay: idx * 0.1, duration: 0.6 }}
-                  viewport={{ once: true }}
-                  whileHover={{ y: -10 }}
-                  className={`glass p-12 rounded-[4rem] shadow-2xl hover:bg-white/20 transition-all duration-500 flex flex-col h-full group ${isRtl ? 'text-right' : 'text-left'}`}
-                >
-                  <div className={`w-20 h-20 bg-white/10 rounded-[2rem] flex items-center justify-center mb-10 text-white group-hover:bg-white group-hover:text-brand-light transition-all duration-500 ${isRtl ? 'mr-0 ml-auto' : ''}`}>
-                    <Star className="h-8 w-8" />
-                  </div>
-                  
-                  <h4 className="text-4xl font-black uppercase tracking-tighter text-white mb-10 transition-colors">
-                    {t(section.title)}
-                  </h4>
-                  
-                  <div className="space-y-6 flex-grow">
-                    {section.items.map(item => (
-                      <div key={item.id} className={`flex justify-between items-end border-b border-white/10 pb-4 group/item ${isRtl ? 'flex-row-reverse' : ''}`}>
-                        <div className={`flex flex-col ${isRtl ? 'text-right' : 'text-left'}`}>
-                          <span className="font-black text-white uppercase text-sm tracking-tight transition-colors">
-                            {t(item.name)}
-                          </span>
-                          <span className="text-[9px] font-bold text-white/40 uppercase tracking-widest opacity-0 group-hover/item:opacity-100 transition-opacity">{t('services.premiumGrade')}</span>
-                        </div>
-                        <div className={isRtl ? 'text-left' : 'text-right'}>
-                          <span className="font-black text-white text-xl tracking-tighter">{item.price}</span>
-                          <span className={`ml-2 text-[10px] font-black text-white/40 uppercase tracking-widest ${isRtl ? 'mr-2 ml-0' : 'ml-2'}`}>IQD</span>
-                        </div>
-                      </div>
-                    ))}
-                    {section.items.length === 0 && (
-                      <p className="text-white/30 text-xs font-black uppercase tracking-widest italic py-4">{t('services.menuReview')}</p>
-                    )}
-                  </div>
-
-                  <div className={`mt-12 pt-8 border-t border-white/10`}>
-                    <div className={`flex items-center space-x-3 text-white font-black uppercase tracking-[0.2em] text-[9px] ${isRtl ? 'space-x-reverse' : ''}`}>
-                      <div className="w-1.5 h-1.5 bg-white rounded-full" />
-                      <span>{t('services.certified')}</span>
+                <Link key={section.id} to={`/services/${section.id}`}>
+                  <motion.div 
+                    initial={{ opacity: 0, y: 30 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    transition={{ delay: idx * 0.1, duration: 0.6 }}
+                    viewport={{ once: true }}
+                    whileHover={{ y: -10 }}
+                    className={`glass p-12 rounded-[4rem] shadow-2xl hover:bg-white/20 transition-all duration-500 flex flex-col h-full group cursor-pointer ${isRtl ? 'text-right' : 'text-left'}`}
+                  >
+                    <div className={`w-20 h-20 bg-white/10 rounded-[2rem] flex items-center justify-center mb-10 text-white group-hover:bg-white group-hover:text-brand-light transition-all duration-500 ${isRtl ? 'mr-0 ml-auto' : ''}`}>
+                      <Star className="h-8 w-8" />
                     </div>
-                  </div>
-                </motion.div>
+                    
+                    <h4 className="text-4xl font-black uppercase tracking-tighter text-white mb-6 transition-colors">
+                      {t(section.title)}
+                    </h4>
+                    
+                    <p className="text-white/60 text-lg font-light mb-10 flex-grow">
+                      {section.items.length} {isRtl ? 'بڕگە' : 'Items'} {isRtl ? 'بەردەستن' : 'Available'}
+                    </p>
+
+                    <div className={`flex items-center space-x-3 text-white font-black uppercase tracking-[0.2em] text-[10px] ${isRtl ? 'space-x-reverse' : ''}`}>
+                      <span>{isRtl ? 'بینینی لیستە' : 'View Menu'}</span>
+                      <Star className="h-3 w-3 fill-white" />
+                    </div>
+
+                    <div className={`mt-10 pt-8 border-t border-white/10`}>
+                      <div className={`flex items-center space-x-3 text-white font-black uppercase tracking-[0.2em] text-[9px] ${isRtl ? 'space-x-reverse' : ''}`}>
+                        <div className="w-1.5 h-1.5 bg-white rounded-full" />
+                        <span>{t('services.certified')}</span>
+                      </div>
+                    </div>
+                  </motion.div>
+                </Link>
               ))}
             </div>
           )}

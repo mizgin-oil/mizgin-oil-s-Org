@@ -29,7 +29,7 @@ const AdminPage: React.FC = () => {
   const { t, isRtl } = useLanguage();
   
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [email, setEmail] = useState('');
+  const [email, setEmail] = useState('mizgin.oil.duhok@gmail.com');
   const [password, setPassword] = useState('');
   const [loginError, setLoginError] = useState('');
   const [successMsg, setSuccessMsg] = useState('');
@@ -167,24 +167,13 @@ const AdminPage: React.FC = () => {
             <div className="w-24 h-24 mb-8 bg-brand-main rounded-[2.5rem] flex items-center justify-center shadow-2xl">
               <ShieldCheck className="w-12 h-12 text-brand-dark" />
             </div>
-            <h1 className="text-4xl font-black text-white uppercase tracking-tighter text-center">Operational <span className="text-brand-main">Access</span></h1>
-            <p className="text-[10px] font-bold text-white/40 uppercase tracking-[0.6em] mt-4">Mizgin Oil Secure Terminal</p>
+            <h1 className="text-4xl font-black text-white uppercase tracking-tighter text-center">Admin</h1>
+            <p className="text-[10px] font-bold text-white/40 uppercase tracking-[0.6em] mt-4">Secure Login</p>
           </div>
 
           <form onSubmit={handleLogin} className="space-y-8">
             <div className="space-y-2">
-              <label className="block text-[10px] font-black text-brand-main uppercase tracking-[0.3em] px-4">Authorized Identity</label>
-              <input 
-                type="email" 
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="w-full bg-white/5 px-8 py-6 rounded-[2rem] border-2 border-transparent focus:border-brand-main/30 focus:bg-white/10 focus:outline-none transition-all font-bold text-white placeholder-white/20"
-                placeholder="mizgin.admin@terminal.com"
-                required
-              />
-            </div>
-            <div className="space-y-2">
-              <label className="block text-[10px] font-black text-brand-main uppercase tracking-[0.3em] px-4">Access Protocol</label>
+              <label className="block text-[10px] font-black text-brand-main uppercase tracking-[0.3em] px-4">Password</label>
               <input 
                 type="password" 
                 value={password}
@@ -201,7 +190,7 @@ const AdminPage: React.FC = () => {
               </div>
             )}
             <button type="submit" className="w-full bg-brand-main text-brand-dark font-black py-7 rounded-[2rem] hover:scale-[1.02] active:scale-95 transition-all uppercase tracking-[0.5em] text-xs shadow-3xl mt-6">
-              Establish Connection
+              Login
             </button>
           </form>
         </motion.div>

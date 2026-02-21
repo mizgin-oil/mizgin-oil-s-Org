@@ -11,6 +11,7 @@ const ServicesPage = lazy(() => import('./pages/ServicesPage'));
 const CalculatorPage = lazy(() => import('./pages/CalculatorPage'));
 const AboutPage = lazy(() => import('./pages/AboutPage'));
 const AdminPage = lazy(() => import('./pages/AdminPage'));
+const ServiceCategoryPage = lazy(() => import('./pages/ServiceCategoryPage'));
 
 const LoadingFallback = () => (
   <div className="h-screen flex items-center justify-center bg-brand-light">
@@ -50,6 +51,7 @@ function App() {
               <Routes>
                 <Route path="/" element={<HomePage />} />
                 <Route path="/services" element={<ServicesPage />} />
+                <Route path="/services/:categoryId" element={<ServiceCategoryPage />} />
                 <Route path="/calculator" element={<CalculatorPage />} />
                 <Route path="/about" element={<AboutPage />} />
                 <Route path="/admin" element={<AdminPage />} />

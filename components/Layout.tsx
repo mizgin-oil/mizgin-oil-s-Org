@@ -54,8 +54,11 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) =>
     instagram: 'https://www.instagram.com/mizgin.oil.station'
   };
 
-  const isDarkBgPage = location.pathname === '/' || location.pathname === '/services' || location.pathname === '/about' || location.pathname === '/calculator';
+  const isDarkBgPage = location.pathname === '/' || location.pathname === '/services' || location.pathname === '/about' || location.pathname === '/calculator' || location.pathname.startsWith('/services/');
   const useDarkText = scrolled || (!isDarkBgPage);
+
+  const [isServicesHovered, setIsServicesHovered] = useState(false);
+  const { customSections } = useAdmin();
 
   return (
     <div className={`min-h-screen flex flex-col font-sans selection:bg-brand-main selection:text-white ${isRtl ? 'rtl' : 'ltr'}`}>
@@ -83,25 +86,69 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) =>
 
             {/* Desktop Nav */}
             <div className={`hidden md:flex items-center ${isRtl ? 'space-x-reverse space-x-2' : 'space-x-2'}`}>
-              {navLinks.map((link) => (
-                <Link
-                  key={link.path}
-                  to={link.path}
-                  className={`px-5 py-2 rounded-full text-sm font-bold transition-all duration-300 relative group overflow-hidden ${
-                    location.pathname === link.path 
-                      ? (useDarkText ? 'text-brand-main' : 'text-white')
-                      : (useDarkText ? 'text-brand-gray hover:text-brand-dark' : 'text-white/70 hover:text-white')
-                  }`}
-                >
-                  <span className="relative z-10">{link.label}</span>
-                  {location.pathname === link.path && (
-                    <motion.div 
-                      layoutId="activeTab"
-                      className={`absolute inset-0 rounded-full -z-0 ${useDarkText ? 'bg-brand-main/10' : 'bg-white/10'}`}
-                    />
-                  )}
-                </Link>
-              ))}
+              {navLinks.map((link) => {
+                const isServices = link.path === '/services';
+                
+                return (
+                  <div 
+                    key={link.path}
+                    className="relative"
+                    onMouseEnter={() => isServices && setIsServicesHovered(true)}
+                    onMouseLeave={() => isServices && setIsServicesHovered(false)}
+                  >
+                    <Link
+                      to={link.path}
+                      className={`px-5 py-2 rounded-full text-sm md:text-base font-bold transition-all duration-300 relative group overflow-hidden flex items-center space-x-1 ${isRtl ? 'space-x-reverse' : ''} ${
+                        location.pathname === link.path || (isServices && location.pathname.startsWith('/services/'))
+                          ? (useDarkText ? 'text-brand-main' : 'text-white')
+                          : (useDarkText ? 'text-brand-gray hover:text-brand-dark' : 'text-white/70 hover:text-white')
+                      }`}
+                    >
+                      <span className="relative z-10">{link.label}</span>
+                      {isServices && <ChevronDown className={`h-3 w-3 transition-transform duration-300 ${isServicesHovered ? 'rotate-180' : ''}`} />}
+                      {(location.pathname === link.path || (isServices && location.pathname.startsWith('/services/'))) && (
+                        <motion.div 
+                          layoutId="activeTab"
+                          className={`absolute inset-0 rounded-full -z-0 ${useDarkText ? 'bg-brand-main/10' : 'bg-white/10'}`}
+                        />
+                      )}
+                    </Link>
+
+                    {/* Services Dropdown */}
+                    {isServices && (
+                      <AnimatePresence>
+                        {isServicesHovered && (
+                          <motion.div
+                            initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                            animate={{ opacity: 1, y: 0, scale: 1 }}
+                            exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                            className={`absolute top-full mt-2 glass-dark shadow-3xl rounded-3xl p-3 min-w-[220px] border border-white/10 z-[60] ${isRtl ? 'right-0' : 'left-0'}`}
+                          >
+                            <div className="flex flex-col space-y-1">
+                              <Link
+                                to="/services"
+                                className={`px-4 py-3 rounded-xl text-xs font-black uppercase tracking-widest transition-colors ${isRtl ? 'text-right' : 'text-left'} ${location.pathname === '/services' ? 'bg-brand-main text-brand-dark' : 'text-white/70 hover:bg-white/10'}`}
+                              >
+                                {t('services.allServices') || 'All Services'}
+                              </Link>
+                              <div className="h-px bg-white/5 my-1" />
+                              {customSections.map((section) => (
+                                <Link
+                                  key={section.id}
+                                  to={`/services/${section.id}`}
+                                  className={`px-4 py-3 rounded-xl text-xs font-black uppercase tracking-widest transition-colors ${isRtl ? 'text-right' : 'text-left'} ${location.pathname === `/services/${section.id}` ? 'bg-brand-main text-brand-dark' : 'text-white/70 hover:bg-white/10'}`}
+                                >
+                                  {t(section.title)}
+                                </Link>
+                              ))}
+                            </div>
+                          </motion.div>
+                        )}
+                      </AnimatePresence>
+                    )}
+                  </div>
+                );
+              })}
 
               {/* Language Switcher */}
               <div className="relative mx-2">
@@ -227,14 +274,14 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) =>
                 <img src={BRAND_LOGO_URL} alt="MIZGIN OIL" className="h-20 w-auto object-contain brightness-0 invert" />
                 <div className="flex flex-col">
                   <span className="text-3xl font-black tracking-tighter uppercase block">MIZGIN<span className="text-brand-main">OIL</span></span>
-                  <span className="text-[10px] font-bold text-brand-main uppercase tracking-[0.5em]">{t('footer.eliteChoice')}</span>
+                  <span className="text-xs font-bold text-brand-main uppercase tracking-[0.5em]">{t('footer.eliteChoice')}</span>
                 </div>
               </Link>
               <p className="text-brand-gray text-xl max-w-md font-light leading-relaxed">{t('footer.tagline')}</p>
             </div>
             
             <div>
-              <h4 className="text-[10px] font-black uppercase tracking-[0.3em] text-brand-main mb-8">{t('footer.concierge')}</h4>
+              <h4 className="text-xs font-black uppercase tracking-[0.3em] text-brand-main mb-8">{t('footer.concierge')}</h4>
               <ul className="space-y-5 text-brand-gray font-medium">
                 <li><Link to="/services" className="hover:text-white transition-colors">{t('nav.services')}</Link></li>
                 <li><Link to="/about" className="hover:text-white transition-colors">{t('nav.legacy')}</Link></li>
@@ -242,7 +289,7 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) =>
             </div>
 
             <div>
-              <h4 className="text-[10px] font-black uppercase tracking-[0.3em] text-brand-main mb-8">{t('footer.connect')}</h4>
+              <h4 className="text-xs font-black uppercase tracking-[0.3em] text-brand-main mb-8">{t('footer.connect')}</h4>
               <div className={`flex space-x-4 mb-10 ${isRtl ? 'space-x-reverse' : ''}`}>
                 <a href={socialLinks.facebook} target="_blank" rel="noopener noreferrer" className="w-12 h-12 rounded-xl border border-white/10 flex items-center justify-center hover:bg-brand-main hover:border-brand-main transition-all duration-500"><Facebook className="h-5 w-5" /></a>
                 <a href={socialLinks.instagram} target="_blank" rel="noopener noreferrer" className="w-12 h-12 rounded-xl border border-white/10 flex items-center justify-center hover:bg-brand-main hover:border-brand-main transition-all duration-500"><Instagram className="h-5 w-5" /></a>

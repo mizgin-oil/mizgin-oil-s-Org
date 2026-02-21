@@ -97,10 +97,10 @@ export const FuelCalculator: React.FC = () => {
                   }`}
                 >
                   <div className="relative z-10 w-full px-1 text-center">
-                    <span className="block text-[9px] md:text-xs font-black uppercase tracking-tighter md:tracking-widest mb-1 leading-none break-words">
+                    <span className="block text-[10px] md:text-sm font-black uppercase tracking-tighter md:tracking-widest mb-1 leading-none break-words">
                       {displayName}
                     </span>
-                    <span className={`block text-[9px] font-bold opacity-60`}>
+                    <span className={`block text-[10px] md:text-[11px] font-bold opacity-60`}>
                       {f.pricePerLiter} IQD
                     </span>
                   </div>
